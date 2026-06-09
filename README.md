@@ -1,6 +1,6 @@
 # The Basics of Regression in Python
 
-The following notebook is part of a training delivered by **Silva Bashllari, MSc** through the **PyLadies Prishtina** community, covering the fundamentals of regression tasks through Simple Linear Regression, Multiple Linear Regression, Ridge, and Lasso.
+The following notebook is part of a training delivered through the **PyLadies Prishtina** community, covering the fundamentals of regression tasks through Simple Linear Regression, Multiple Linear Regression, Ridge, and Lasso.
 
 **Expected level of participants:** Beginners with some core high-school level mathematics and basic Python skills.
 
