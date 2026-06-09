@@ -56,4 +56,4 @@ This project demonstrates a **full Data Science / Machine Learning pipeline** �
 
 ## Community
 
-This training was organised under **[PyLadies Prishtina](https://github.com/PyLadiesPrishtina)** — a community dedicated to supporting women and gender minorities in Python and data science.
+This training was organised under **PyLadies Prishtina** — a community dedicated to supporting [not-only] women and other under-represented groups in Python and data science.
