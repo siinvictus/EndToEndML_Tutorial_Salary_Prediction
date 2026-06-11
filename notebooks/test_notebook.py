@@ -24,6 +24,7 @@ def _():
     from sklearn.preprocessing import StandardScaler
     import plotly.express as px
     import pickle
+    import shap
 
     return (
         LinearRegression,
@@ -35,6 +36,7 @@ def _():
         plt,
         px,
         r2_score,
+        shap,
         train_test_split,
     )
 
@@ -203,7 +205,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### In any of the variables, at least from a visual p.o.v we don't observe any completely of out the blue outliers that might harm the analysis or shift dramatically the regression lines.
+    In any of the variables, at least from a visual p.o.v we don't observe any completely of out the blue outliers that might harm the analysis or shift dramatically the regression lines.
     """)
     return
 
@@ -220,7 +222,7 @@ def _(data_nonull, plt):
 
 @app.cell
 def _(data_nonull, plt):
-    plt.scatter(data_nonull['exam_score'], data_nonull['salary'], colorizer='blue', marker='x')
+    plt.scatter(data_nonull['exam_score'], data_nonull['salary'], color='blue', marker='x')
     plt.title('The scatter plot of years of exam scores and salary')
     plt.xlabel('Exam Scores')
     plt.ylabel('Salary')
@@ -508,7 +510,6 @@ def _(data_nonull, train_test_split):
 def _(LinearRegression, X_train, y_train):
     model_multi = LinearRegression()
     model_multi.fit(X_train, y_train)
-
     return (model_multi,)
 
 
@@ -518,7 +519,19 @@ def _(X_test, mean_squared_error, model_multi, np, r2_score, y_test):
 
     r2_multi   = r2_score(y_test, y_pred_multi)
     rmse_multi = np.sqrt(mean_squared_error(y_test, y_pred_multi))
-    return r2_multi, rmse_multi
+    return r2_multi, rmse_multi, y_pred_multi
+
+
+@app.cell
+def _(y_pred_multi):
+    y_pred_multi
+    return
+
+
+@app.cell
+def _(y_test):
+    y_test
+    return
 
 
 @app.cell
@@ -571,13 +584,13 @@ def _(mo):
     The formula then is the following:
 
     $$
-    \hat{salary} = 123043.14 + 2600.94 * yearsExperience + 454.22 * examScore
+    \hat{salary} = 12303.14 + 2600.94 * yearsExperience + 454.22 * examScore
     $$
 
     This means that, keeping everything else static:
     - 1 more year of experience increases the salary by 2600.94 euros;
     - 1 more point in the exam score increases the salary by 454.22 euros;
-    - if the years of experience and the exam score is 0, the expected salary is 123043.14 euros.
+    - if the years of experience and the exam score is 0, the expected salary is 12303.14 euros.
     """)
     return
 
@@ -626,6 +639,262 @@ def _(model_final):
 def _(mo):
     mo.md(r"""
     He/she might see a slight improvement in the salary, with it reaching 69.063.65 euros/year.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## <center> Adding Interpretability through SHAP
+
+    SHAP stands for SHapley Additive exPlanations. <br>
+
+    It combines two ideas: Shapley values from game theory and the fact that the contributions are additive — they sum up exactly to the prediction.
+
+    It can be very helpful in dealing with "black box" models, like neural nets, when we don't know exactly how every input variable has impacted the output.
+
+    However, it is easier to learn it with simple models like the ones above.
+
+    Remember, from the multiple linear regression, we have the following formula:
+
+    $$
+    salary=12303.14+2600.94∗yearsExperience+454.22∗examScore
+    $$
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### First, let's do it step-by-step "by-hand" (yes, irony is recognized) 🐼
+    """)
+    return
+
+
+@app.cell
+def _(data_nonull):
+    data_nonull.describe()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    We have:
+    - mean salary: 69,601.44
+    - mean exam_score: 70.72
+    - mean years_exp: 9.76
+    """)
+    return
+
+
+@app.cell
+def _(data_nonull):
+    mean_exam_score = data_nonull['exam_score'].mean()
+    mean_years_exp = data_nonull['years_exp'].mean()
+    print(f'The average exam score is {mean_exam_score} and the average years of experience are {mean_years_exp}')
+    return mean_exam_score, mean_years_exp
+
+
+@app.cell
+def _(mean_exam_score, mean_years_exp):
+    # We compute the expected value of the salary from our model, that is the mean value
+    expected_salary_from_mr = 12303.14 + 2600.94*mean_years_exp + 454.22*mean_exam_score
+    print(f'The average expected salary is {expected_salary_from_mr}')
+    return (expected_salary_from_mr,)
+
+
+@app.cell
+def _(mean_exam_score, mean_years_exp):
+    2600.94525765*mean_years_exp +  454.22532652 * mean_exam_score + 12303.147145739575
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Now let's consider we have a specfic person with:
+    - Years of experience: 10
+    - Exam score: 57
+
+    We then use our model to predict the salary.
+    """)
+    return
+
+
+@app.cell
+def _(model_final):
+    model_final.predict([[10, 57]])
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Clearly we can see the predicted salary is: 64203.44
+    """)
+    return
+
+
+@app.cell
+def _(model_final):
+    pred_sal_person1 = model_final.predict([[10, 57]])
+    pred_sal_1 = pred_sal_person1[0]
+    return (pred_sal_1,)
+
+
+@app.cell
+def _(expected_salary_from_mr, pred_sal_1):
+    difference_person1 = pred_sal_1 - expected_salary_from_mr
+    print(f'This person gets {difference_person1:.2f} than the average prediction.')
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Now we want to understand which of the variables, namely years of experience and salary, contributed by how much in "losing out" or "gaining" that extra money.
+
+    For this we have to compute <b> the SHAP value for each feature</b>.
+
+    $$
+    SHAP_i = coef_i(x_i - \bar{x_i})
+    $$
+    """)
+    return
+
+
+@app.cell
+def _():
+    shap_experience = 2600.94 * (10-9.76)
+    shap_exams = 454.22 * (57-70.72)
+    print(f'Person 1 got {shap_experience:.2f} euros from the years of experience and {shap_exams:.2f} euros from the exam scores.')
+    return shap_exams, shap_experience
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Verifiying it with the baseline:
+    """)
+    return
+
+
+@app.cell
+def _(expected_salary_from_mr, shap_exams, shap_experience):
+    expected_salary_from_mr +shap_experience+shap_exams  #compared to predicted: 64203.44 -- some 10 euros missing due to approximation errors? but the point is clear.
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Now, using the python library <b>shap
+    """)
+    return
+
+
+@app.cell
+def _(X, model_final, shap):
+    masker = shap.maskers.Independent(X, max_samples=118)
+    explainer = shap.LinearExplainer(model_final, masker)
+    shap_values = explainer(X)
+
+    print("masker mean:", explainer.masker.data.mean(axis=0))
+    print("base_values:", shap_values[0].base_values)
+    return explainer, shap_values
+
+
+@app.cell
+def _(shap, shap_values):
+    # explain one specific person
+    shap.plots.waterfall(shap_values[0])
+    return
+
+
+@app.cell
+def _(X, expected_salary_from_mr, model_final, shap_values):
+    print("By-hand baseline:", expected_salary_from_mr)
+    print("Mean of model predictions over X:", model_final.predict(X).mean())
+    print("SHAP base_values:", shap_values[0].base_values)
+    return
+
+
+@app.cell
+def _(X, explainer):
+    print("X shape:", X.shape)
+    print("X mean:\n", X.mean())
+    print("masker mean:\n", explainer.masker.data.mean(axis=0) if hasattr(explainer.masker, 'data') else "no masker.data")
+    return
+
+
+@app.cell
+def _(shap, shap_values):
+    # global summary
+    shap.plots.beeswarm(shap_values)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## <center> Regularization Techniques
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Ridge Regression
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Lasso Regression
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Elastic Net
     """)
     return
 
