@@ -24,14 +24,25 @@ Our goal is to **predict salary** based on the two input variables. We experimen
 
 This project demonstrates a **full Data Science / Machine Learning pipeline** — not only preprocessing and model creation, but the complete path from raw data to a live application:
 
-1. **Exploratory Data Analysis** — distributions, correlations, missing value handling
-2. **Preprocessing** — cleaning, feature selection, train/test split, scaling
-3. **Modelling** — Simple Linear Regression (×2), Multiple Linear Regression, Ridge, Lasso
-4. **Evaluation** — models are compared using $R^2$ and RMSE (Root Mean Squared Error)
-5. **Saving the model** — serialising the final trained model as a `.pkl` file
-6. **Deployment** — serving the model via an API
-7. **Web application** — a simple website where users can input values and get a salary prediction
-8. **User testing** — testing the model with real users through the website
+2.  **Exploratory Data Analysis** — distributions, correlations, missing value handling
+3. **Preprocessing** — cleaning, feature selection, train/test split, scaling
+4. **Modelling** — Simple Linear Regression (×2), Multiple Linear Regression, Ridge, Lasso
+5. **Evaluation** — models are compared using $R^2$ and RMSE (Root Mean Squared Error)
+6. **Interpretation** - model predictions are interpreted using the SHAP method.
+7. **Saving the model** — serialising the final trained model as a `.pkl` file
+8. **Deployment** — serving the model via an API
+9. **Web application** — a simple website where users can input values and get a salary prediction
+10. **User testing** — testing the model with real users through the website
+
+---
+
+### How to go by it's structure:
+
+1. **Marimo Notebook**: first explorations done here.
+2. **The full Python-folder structure**: best-performing models are transformed into propoer project-structure in the **src** folder, reached through running **main.py**.MLflow tracking is integrated here to log each run.
+3. **Models saved**: after running main, one should see the models saved as `.pkl` files in the **models** folder.
+4. **Tests**: the **tests** folder contains unit tests for the pipeline, runnable via `pytest`.
+5.
 
 ---
 
