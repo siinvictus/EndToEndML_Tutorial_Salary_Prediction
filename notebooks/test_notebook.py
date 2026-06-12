@@ -25,6 +25,7 @@ def _():
     import plotly.express as px
     import pickle
     import shap
+    import seaborn as sns
 
     return (
         LinearRegression,
@@ -37,6 +38,7 @@ def _():
         px,
         r2_score,
         shap,
+        sns,
         train_test_split,
     )
 
@@ -205,6 +207,14 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    From the three plots above we can observe <b> there appear to be no outliners </b> to handle.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     In any of the variables, at least from a visual p.o.v we don't observe any completely of out the blue outliers that might harm the analysis or shift dramatically the regression lines.
     """)
     return
@@ -250,7 +260,30 @@ def _(mo):
 
 @app.cell
 def _(data_nonull):
-    data_nonull[['years_exp', 'exam_score', 'salary']].corr()
+    corr_matrix = data_nonull[['years_exp', 'exam_score', 'salary']].corr()
+    return (corr_matrix,)
+
+
+@app.cell
+def _(corr_matrix):
+    type(corr_matrix)
+    return
+
+
+@app.cell
+def _(corr_matrix):
+    corr_matrix
+    return
+
+
+@app.cell
+def _(corr_matrix, sns):
+    sns.heatmap(corr_matrix, 
+                cmap='cubehelix',
+                center=0,
+                annot=True,
+                #fmt = '.1g'  -- this makes it rounded to 1 decimal point
+    )
     return
 
 
@@ -596,6 +629,27 @@ def _(mo):
 
 
 @app.cell
+def _(X, model_final):
+    y_pred_final = model_final.predict(X)
+    return (y_pred_final,)
+
+
+@app.cell
+def _(plt, y, y_pred_final):
+    plt.scatter(y, y_pred_final, color='purple', alpha=0.6)
+
+    # perfect prediction line (y = y_pred)
+    plt.plot([y.min(), y.max()], [y.min(), y.max()], color='black', linestyle='--')
+
+
+    plt.title('Actual vs Predicted Salary')
+    plt.xlabel('Actual Salary')
+    plt.ylabel('Predicted Salary')
+    plt.show()
+    return
+
+
+@app.cell
 def _(model_final, pickle):
     with open("../models/mult_lin_reg.pkl", "wb") as f:
         pickle.dump(model_final, f)
@@ -796,6 +850,14 @@ def _(mo):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    #### 1. Computing the SHAP values
+    """)
+    return
+
+
 @app.cell
 def _(X, model_final, shap):
     masker = shap.maskers.Independent(X, max_samples=118)
@@ -808,9 +870,43 @@ def _(X, model_final, shap):
 
 
 @app.cell
+def _(shap_values):
+    print(f'The type of shap values {type(shap_values)} and internally {type(shap_values.values)}')
+
+    return
+
+
+@app.cell
+def _(np, shap_values):
+    print(np.shape(shap_values.values)) #so each row has 2 shap values, 1 for each feature.
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    #### 2. Waterfall & bar plots.
+    """)
+    return
+
+
+@app.cell
 def _(shap, shap_values):
     # explain one specific person
     shap.plots.waterfall(shap_values[0])
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    We can clearly see that for the first person taken into consideration here, we observe:
+    - The expected salary that is the mean salary (same as we computed "by hand" above): 69,601.44 Euros
+    - This person's predicted salary: <b> 83,793.857 </b> Euros
+    - And how much each of the two features contributes to that difference from the mean salary:
+          - the fact that the years of experience are 16.1, it adds 16,703.36 euros to the salary.
+          - the fact that the exam score 65.2, lowers the salary by 2,510.94 euros.
+    """)
     return
 
 
@@ -832,13 +928,69 @@ def _(X, explainer):
 
 @app.cell
 def _(shap, shap_values):
-    # global summary
-    shap.plots.beeswarm(shap_values)
+    shap.plots.force(shap_values[0], matplotlib=True) #it required matplotlib=True otherwise doesn't allow it.
     return
 
 
 @app.cell
-def _():
+def _(shap, shap_values):
+    shap.plots.bar(shap_values)
+    #shows absolute mean shap values
+    # because for each observation, that is for each person, there will be a shap value for each feature,
+    # the bar graph below gives the abs mean over all obs.
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    How to compute the mean(|shap value|) above and how to interpret the results?
+
+    For each feature, we have:
+
+    $$
+     \text{importance}_j = \frac{1}{n} \sum_{i=1}^{n} (|\text{SHAP}_{i,j}|)
+    $$
+
+    So, the importance of feature j is measured as the average of all the SHAP values for that feature for every person.
+
+    In our case:
+    - The years of experience changes the salary on average by $+- 13114.41$ euros
+    - The exam score changes the salary on average by $+-6513.73$ euros
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    #### 3. Beeswarm Plot
+    """)
+    return
+
+
+@app.cell
+def _(shap, shap_values):
+    # global summary
+    # we can see which have large pos or large negative values
+    # for both of the features, as the feature values increase, the shap values increase
+    shap.plots.beeswarm(shap_values)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    #### 4. Dependence Plots
+
+    Quite useful if the features have a nonlinear relationship with the target value.
+    """)
+    return
+
+
+@app.cell
+def _(shap, shap_values):
+    shap.plots.scatter(shap_values)
     return
 
 
