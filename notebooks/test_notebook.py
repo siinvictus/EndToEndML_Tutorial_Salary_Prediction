@@ -82,7 +82,7 @@ def _(pd):
 
 @app.cell
 def _(data):
-    data.head()
+    data.head(10)
     return
 
 
@@ -872,7 +872,6 @@ def _(X, model_final, shap):
 @app.cell
 def _(shap_values):
     print(f'The type of shap values {type(shap_values)} and internally {type(shap_values.values)}')
-
     return
 
 
