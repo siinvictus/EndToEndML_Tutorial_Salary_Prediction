@@ -43,7 +43,8 @@ This project demonstrates a **full Data Science / Machine Learning pipeline** â€
 2. **The full Python-folder structure**: best-performing models are transformed into propoer project-structure in the **src** folder, reached through running **main.py**.`MLflow` tracking is integrated here to log each run.
 3. **Models saved**: after running main, one should see the models saved as `.pkl` files in the **models** folder.
 4. **Tests**: the **tests** folder contains unit tests for the pipeline, runnable via `pytest`.
-5.
+5. 
+6. **Reporting**: read the report to understand the full project and pipeline.
 
 ---
 
