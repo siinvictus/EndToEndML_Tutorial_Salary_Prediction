@@ -1469,12 +1469,12 @@
     },
     {
       "id": "wEIy",
-      "code_hash": "225b09c4fe93029a54f7a52c9761f95b",
+      "code_hash": "8789b60ffee84904883350e241160092",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"lasso-regression\">Lasso Regression</h3></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"></span>"
           }
         }
       ],
