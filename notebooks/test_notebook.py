@@ -18,7 +18,7 @@ def _():
     import numpy as np
     import pandas as pd
     import matplotlib.pyplot as plt
-    from sklearn.linear_model import LinearRegression, Ridge, Lasso
+    from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import r2_score, mean_squared_error
     from sklearn.preprocessing import StandardScaler
@@ -28,7 +28,11 @@ def _():
     import seaborn as sns
 
     return (
+        ElasticNet,
+        Lasso,
         LinearRegression,
+        Ridge,
+        StandardScaler,
         mean_squared_error,
         mo,
         np,
@@ -76,7 +80,7 @@ def _(mo):
 
 @app.cell
 def _(pd):
-    data = pd.read_excel("/home/siinvictus/projects/stupid_project/data/salary_data.xlsx")
+    data = pd.read_excel("data/salary_data.xlsx")
     return (data,)
 
 
@@ -1001,44 +1005,385 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    return
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Regularization Techniques
 
+    Until now, our linear regression model had only one main objective: find the coefficients that minimize the prediction error.
 
-@app.cell
-def _():
+    In multiple linear regression, our salary prediction followed the form:
+
+    \[
+    \hat{salary} = b + w_1 \cdot years\_exp + w_2 \cdot exam\_score
+    \]
+
+    The coefficients \(w_1\) and \(w_2\) tell us how much each feature contributes to the final salary prediction.
+
+    However, ordinary linear regression gives the model full freedom to choose these coefficients. This is not always a problem, especially in a small and clean dataset like ours. But in real datasets, we may have many features, noisy data, duplicated information, or strongly correlated variables. In those cases, the model may start relying too much on certain variables and produce coefficients that are too large or unstable.
+
+    Regularization is a way of saying:
+
+    > "Fit the data, but do not let the coefficients become unnecessarily large."
+
+    So instead of minimizing only the prediction error, regularized models minimize:
+
+    \[
+    prediction\ error + penalty
+    \]
+
+    The penalty is applied to the coefficients. This means the model is rewarded for predicting well, but punished if it uses overly large coefficients to do so.
+
+    This is useful because smaller and more controlled coefficients often lead to models that generalize better to unseen data.
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### Ridge Regression
+    ### Why do we scale before regularization?
+
+    Regularization penalizes the size of coefficients. Because of that, the scale of the input variables matters.
+
+    For example, `exam_score` ranges from 0 to 100, while `years_exp` is much smaller in range. If we apply regularization directly, the model may punish one coefficient more than another simply because the features are measured in different units.
+
+    To avoid this, we standardize the input features so that each feature has:
+
+    \[
+    mean = 0,\quad standard\ deviation = 1
+    \]
+
+    This allows Ridge, Lasso, and Elastic Net to treat the features more fairly.
     """)
     return
 
 
 @app.cell
-def _():
+def _(StandardScaler, X, X_test, X_train):
+    scaler = StandardScaler()
+
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    X_scaled = scaler.fit_transform(X)
+    return X_test_scaled, X_train_scaled
+
+
+@app.cell
+def _(mean_squared_error, np, r2_score):
+    def evaluate_model(model, X_train, X_test, y_train, y_test, model_name):
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+
+        r2 = r2_score(y_test, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+
+        print(f"\n--- {model_name} ---")
+        print(f"R²:   {r2:.3f}")
+        print(f"RMSE: {rmse:.2f} €")
+
+        return r2, rmse, model
+
+    return (evaluate_model,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+ 
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### Lasso Regression
+    ## Ridge Regression
+
+    Ridge Regression is the first regularized version of linear regression that we will test.
+
+    Ordinary Linear Regression minimizes:
+
+    \[
+    RSS = \sum_{i=1}^{n}(y_i - \hat{y}_i)^2
+    \]
+
+    Ridge Regression adds a penalty to this:
+
+    \[
+    RSS + \alpha \sum_{j=1}^{p} w_j^2
+    \]
+
+    The second part is the regularization penalty. It squares each coefficient and adds them together.
+
+    The hyperparameter \(\alpha\) controls how strong the penalty is:
+
+    - If \(\alpha = 0\), Ridge behaves like ordinary linear regression.
+    - If \(\alpha\) is small, the model is only lightly regularized.
+    - If \(\alpha\) is large, the model is strongly discouraged from using large coefficients.
+
+    Ridge does not usually make coefficients exactly zero. Instead, it shrinks them. This makes Ridge useful when we believe most features are useful, but we still want to control the model's flexibility.
     """)
     return
 
 
 @app.cell
-def _():
+def _(
+    Ridge,
+    X,
+    X_test_scaled,
+    X_train_scaled,
+    evaluate_model,
+    y_test,
+    y_train,
+):
+    ridge_model = Ridge(alpha=1.0)
+
+    r2_ridge, rmse_ridge, ridge_model = evaluate_model(
+        ridge_model,
+        X_train_scaled,
+        X_test_scaled,
+        y_train,
+        y_test,
+        "Ridge Regression"
+    )
+
+    print("Ridge coefficients:")
+    for feature, coef in zip(X.columns, ridge_model.coef_):
+        print(f"{feature}: {coef:.2f}")
+
+    print(f"Intercept: {ridge_model.intercept_:.2f}")
+    return r2_ridge, rmse_ridge
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Interpretation
+
+    The Ridge coefficients are based on scaled features, so they should not be interpreted in the exact same euro-per-unit way as the original linear regression coefficients.
+
+    Instead, the main thing we observe is how Ridge controls the coefficients compared to ordinary linear regression. Ridge keeps both features in the model, but applies pressure on the coefficients so they do not become unnecessarily large.
+
+    In our case, since the dataset has only two features and they are not strongly correlated, we do not expect Ridge to dramatically outperform ordinary linear regression. The value of Ridge becomes more visible when the dataset has many features or multicollinearity.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+ 
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Lasso Regression
+
+    Lasso Regression is another regularized version of linear regression.
+
+    Its objective is:
+
+    \[
+    RSS + \alpha \sum_{j=1}^{p} |w_j|
+    \]
+
+    The difference is that Lasso uses the absolute value of the coefficients instead of the squared value.
+
+    This small mathematical change creates an important behavior: Lasso can shrink some coefficients all the way to zero.
+
+    When a coefficient becomes zero, the feature is effectively removed from the model.
+
+    So Lasso is useful not only for controlling overfitting, but also for feature selection.
+    """)
     return
 
 
 @app.cell
-def _():
+def _(
+    Lasso,
+    X,
+    X_test_scaled,
+    X_train_scaled,
+    evaluate_model,
+    y_test,
+    y_train,
+):
+    lasso_model = Lasso(alpha=0.1, max_iter=10000)
+
+    r2_lasso, rmse_lasso, lasso_model = evaluate_model(
+        lasso_model,
+        X_train_scaled,
+        X_test_scaled,
+        y_train,
+        y_test,
+        "Lasso Regression"
+    )
+
+    print("Lasso coefficients:")
+    for feat, co in zip(X.columns, lasso_model.coef_):
+        print(f"{feat}: {co:.2f}")
+
+    print(f"Intercept: {lasso_model.intercept_:.2f}")
+    return r2_lasso, rmse_lasso
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Interpretation
+
+    Lasso is stricter than Ridge because it can force weak coefficients to become exactly zero.
+
+    In this dataset, we only have two predictors: years of experience and exam score. Since both variables have some relationship with salary, Lasso may keep both of them depending on the value of \(\alpha\).
+
+    However, if we increase \(\alpha\), Lasso becomes more aggressive. This allows us to observe which feature the model considers more essential for predicting salary.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### How does alpha change the Lasso model?
+
+    Instead of using only one value of \(\alpha\), we can test several values and observe how the coefficients change.
+
+    This helps us understand Lasso as a coefficient selection mechanism rather than just another regression model.
+    """)
+    return
+
+
+@app.cell
+def _(
+    Lasso,
+    X_test_scaled,
+    X_train_scaled,
+    mean_squared_error,
+    np,
+    pd,
+    r2_score,
+    y_test,
+    y_train,
+):
+    alphas = [0.001, 0.01, 0.1, 1, 10, 100]
+
+    lasso_results = []
+
+    for alpha in alphas:
+        model = Lasso(alpha=alpha, max_iter=10000)
+        model.fit(X_train_scaled, y_train)
+        y_pred = model.predict(X_test_scaled)
+
+        lasso_results.append({
+            "alpha": alpha,
+            "r2": r2_score(y_test, y_pred),
+            "rmse": np.sqrt(mean_squared_error(y_test, y_pred)),
+            "years_exp_coef": model.coef_[0],
+            "exam_score_coef": model.coef_[1]
+        })
+
+    lasso_results_df = pd.DataFrame(lasso_results)
+    lasso_results_df
+    return alphas, lasso_results_df, model, y_pred
+
+
+@app.cell
+def _(lasso_results_df, plt):
+    plt.figure(figsize=(8, 5))
+    plt.plot(lasso_results_df["alpha"], lasso_results_df["years_exp_coef"], marker="o", label="years_exp")
+    plt.plot(lasso_results_df["alpha"], lasso_results_df["exam_score_coef"], marker="o", label="exam_score")
+    plt.xscale("log")
+    plt.xlabel("Alpha")
+    plt.ylabel("Coefficient value")
+    plt.title("Lasso coefficient shrinkage as alpha increases")
+    plt.legend()
+    plt.show()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    From the plot above, we can see how increasing \(\alpha\) puts more pressure on the coefficients.
+
+    At low values of \(\alpha\), Lasso behaves similarly to ordinary linear regression. As \(\alpha\) increases, the coefficients shrink. If \(\alpha\) becomes large enough, one or more coefficients may become exactly zero.
+
+    This is the main conceptual difference between Ridge and Lasso: Ridge shrinks coefficients smoothly, while Lasso can remove features from the model completely.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### How does alpha change the Ridge model?
+
+    We repeat the same experiment with Ridge. The expectation is different: Ridge should shrink coefficients as \(\alpha\) increases, but it should not usually force them exactly to zero.
+    """)
+    return
+
+
+@app.cell
+def _(
+    Ridge,
+    X_test_scaled,
+    X_train_scaled,
+    alphas,
+    mean_squared_error,
+    model,
+    np,
+    pd,
+    r2_score,
+    y_pred,
+    y_test,
+    y_train,
+):
+    ridge_results = []
+
+    for ralpha in alphas:
+        rmodel = Ridge(alpha=ralpha)
+        rmodel.fit(X_train_scaled, y_train)
+        y_pred_r = model.predict(X_test_scaled)
+
+        ridge_results.append({
+            "alpha": ralpha,
+            "r2": r2_score(y_test, y_pred),
+            "rmse": np.sqrt(mean_squared_error(y_test, y_pred)),
+            "years_exp_coef": model.coef_[0],
+            "exam_score_coef": model.coef_[1]
+        })
+
+    ridge_results_df = pd.DataFrame(ridge_results)
+    ridge_results_df
+    return (ridge_results_df,)
+
+
+@app.cell
+def _(plt, ridge_results_df):
+    plt.figure(figsize=(8, 5))
+    plt.plot(ridge_results_df["alpha"], ridge_results_df["years_exp_coef"], marker="o", label="years_exp")
+    plt.plot(ridge_results_df["alpha"], ridge_results_df["exam_score_coef"], marker="o", label="exam_score")
+    plt.xscale("log")
+    plt.xlabel("Alpha")
+    plt.ylabel("Coefficient value")
+    plt.title("Ridge coefficient shrinkage as alpha increases")
+    plt.legend()
+    plt.show()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The Ridge coefficients also shrink as \(\alpha\) increases. However, unlike Lasso, Ridge does not usually set coefficients exactly to zero.
+
+    This means Ridge keeps both variables in the model, but reduces their strength. In other words, Ridge controls the volume of each feature rather than muting features completely.
+    """)
     return
 
 
@@ -1047,6 +1392,138 @@ def _(mo):
     mo.md(r"""
     ### Elastic Net
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Elastic Net
+
+    Elastic Net combines Ridge and Lasso.
+
+    Its objective is:
+
+    \[
+    RSS + \alpha \left( l1\_ratio \sum |w_j| + (1 - l1\_ratio)\sum w_j^2 \right)
+    \]
+
+    This means Elastic Net has two controls:
+
+    - \(\alpha\): how strong the total regularization is
+    - \(l1\_ratio\): how much of the penalty behaves like Lasso versus Ridge
+
+    If:
+
+    \[
+    l1\_ratio = 1
+    \]
+
+    Elastic Net behaves like Lasso.
+
+    If:
+
+    \[
+    l1\_ratio = 0
+    \]
+
+    Elastic Net behaves like Ridge.
+
+    If the value is between 0 and 1, the model combines both behaviors.
+
+    Elastic Net is useful when we want feature selection, but we also want more stability when features are correlated.
+    """)
+    return
+
+
+@app.cell
+def _(
+    ElasticNet,
+    X,
+    X_test_scaled,
+    X_train_scaled,
+    evaluate_model,
+    y_test,
+    y_train,
+):
+    elastic_model = ElasticNet(alpha=0.1, l1_ratio=0.5, max_iter=10000)
+
+    r2_elastic, rmse_elastic, elastic_model = evaluate_model(
+        elastic_model,
+        X_train_scaled,
+        X_test_scaled,
+        y_train,
+        y_test,
+        "Elastic Net Regression"
+    )
+
+    print("Elastic Net coefficients:")
+    for efeature, ecoef in zip(X.columns, elastic_model.coef_):
+        print(f"{efeature}: {ecoef:.2f}")
+
+    print(f"Intercept: {elastic_model.intercept_:.2f}")
+    return r2_elastic, rmse_elastic
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Interpretation
+
+    Elastic Net behaves as a compromise between Ridge and Lasso.
+
+    The Lasso part allows it to reduce unnecessary features, while the Ridge part makes the model more stable. This is especially helpful when we have many predictors and some of them are correlated with each other.
+
+    In our dataset, Elastic Net may not dramatically improve performance because the dataset is small and has only two input variables. However, it is important conceptually because it shows how regularization techniques can be combined depending on the modeling problem.
+    """)
+    return
+
+
+@app.cell
+def _(
+    pd,
+    r2_elastic,
+    r2_lasso,
+    r2_multi,
+    r2_ridge,
+    rmse_elastic,
+    rmse_lasso,
+    rmse_multi,
+    rmse_ridge,
+):
+    comparison = pd.DataFrame({
+        "Model": [
+            "Multiple Linear Regression",
+            "Ridge Regression",
+            "Lasso Regression",
+            "Elastic Net"
+        ],
+        "R²": [
+            r2_multi,
+            r2_ridge,
+            r2_lasso,
+            r2_elastic
+        ],
+        "RMSE": [
+            rmse_multi,
+            rmse_ridge,
+            rmse_lasso,
+            rmse_elastic
+        ]
+    })
+
+    comparison
+    return (comparison,)
+
+
+@app.cell
+def _(comparison, plt):
+    plt.figure(figsize=(8, 5))
+    plt.bar(comparison["Model"], comparison["RMSE"])
+    plt.xticks(rotation=30, ha="right")
+    plt.ylabel("RMSE (€)")
+    plt.title("Model comparison by RMSE")
+    plt.show()
     return
 
 
