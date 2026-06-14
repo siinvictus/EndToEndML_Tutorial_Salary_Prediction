@@ -4,16 +4,11 @@ __generated_with = "0.23.9"
 app = marimo.App(width="medium")
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Importing the necessary libraries:
-    """)
-    return
-
-
 @app.cell
 def _():
+    # importing the necessary libraries
+    # even if you don't have them, using Marimo and uv it should be super easy to install & automatically add them
+    # to the virtual environment created
     import marimo as mo
     import numpy as np
     import pandas as pd
@@ -26,16 +21,25 @@ def _():
     import pickle
     import shap
     import seaborn as sns
+    from pathlib import Path
+    import os
+    from sklearn.model_selection import GridSearchCV
+    import optuna
+    from sklearn.model_selection import cross_val_score
 
     return (
         ElasticNet,
+        GridSearchCV,
         Lasso,
         LinearRegression,
         Ridge,
         StandardScaler,
+        cross_val_score,
         mean_squared_error,
         mo,
         np,
+        optuna,
+        os,
         pd,
         pickle,
         plt,
@@ -79,8 +83,16 @@ def _(mo):
 
 
 @app.cell
-def _(pd):
-    data = pd.read_excel("data/salary_data.xlsx")
+def _(os):
+    PROJECT_ROOT = os.path.dirname(os.getcwd())  # go up from notebooks/ to project root
+    DATA_PATH = os.path.join(PROJECT_ROOT, "data", "salary_data.xlsx")
+    print(f'Your data path is: {DATA_PATH}')
+    return (DATA_PATH,)
+
+
+@app.cell
+def _(DATA_PATH, pd):
+    data = pd.read_excel(DATA_PATH)
     return (data,)
 
 
@@ -1008,8 +1020,6 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Regularization Techniques
-
     Until now, our linear regression model had only one main objective: find the coefficients that minimize the prediction error.
 
     In multiple linear regression, our salary prediction followed the form:
@@ -1270,26 +1280,26 @@ def _(
     y_test,
     y_train,
 ):
-    alphas = [0.001, 0.01, 0.1, 1, 10, 100]
+    alphas = [0.001, 0.01, 0.1, 1, 10, 100, 500, 1000, 5000, 10000]
 
     lasso_results = []
 
     for alpha in alphas:
-        model = Lasso(alpha=alpha, max_iter=10000)
-        model.fit(X_train_scaled, y_train)
-        y_pred = model.predict(X_test_scaled)
+        model_lasso = Lasso(alpha=alpha, max_iter=10000)
+        model_lasso.fit(X_train_scaled, y_train)
+        y_pred_la = model_lasso.predict(X_test_scaled)
 
         lasso_results.append({
             "alpha": alpha,
-            "r2": r2_score(y_test, y_pred),
-            "rmse": np.sqrt(mean_squared_error(y_test, y_pred)),
-            "years_exp_coef": model.coef_[0],
-            "exam_score_coef": model.coef_[1]
+            "r2": r2_score(y_test, y_pred_la),
+            "rmse": np.sqrt(mean_squared_error(y_test, y_pred_la)),
+            "years_exp_coef": model_lasso.coef_[0],
+            "exam_score_coef": model_lasso.coef_[1]
         })
 
     lasso_results_df = pd.DataFrame(lasso_results)
     lasso_results_df
-    return alphas, lasso_results_df, model, y_pred
+    return alphas, lasso_results_df
 
 
 @app.cell
@@ -1335,11 +1345,9 @@ def _(
     X_train_scaled,
     alphas,
     mean_squared_error,
-    model,
     np,
     pd,
     r2_score,
-    y_pred,
     y_test,
     y_train,
 ):
@@ -1348,14 +1356,14 @@ def _(
     for ralpha in alphas:
         rmodel = Ridge(alpha=ralpha)
         rmodel.fit(X_train_scaled, y_train)
-        y_pred_r = model.predict(X_test_scaled)
+        y_pred_r = rmodel.predict(X_test_scaled)
 
         ridge_results.append({
             "alpha": ralpha,
-            "r2": r2_score(y_test, y_pred),
-            "rmse": np.sqrt(mean_squared_error(y_test, y_pred)),
-            "years_exp_coef": model.coef_[0],
-            "exam_score_coef": model.coef_[1]
+            "r2": r2_score(y_test, y_pred_r),
+            "rmse": np.sqrt(mean_squared_error(y_test, y_pred_r)),
+            "years_exp_coef": rmodel.coef_[0],
+            "exam_score_coef": rmodel.coef_[1]
         })
 
     ridge_results_df = pd.DataFrame(ridge_results)
@@ -1380,17 +1388,9 @@ def _(plt, ridge_results_df):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The Ridge coefficients also shrink as \(\alpha\) increases. However, unlike Lasso, Ridge does not usually set coefficients exactly to zero.
+    The Ridge coefficients also shrink as \(\alpha\) increases. However, unlike Lasso, Ridge does not set coefficients exactly to zero but asymptotically.
 
     This means Ridge keeps both variables in the model, but reduces their strength. In other words, Ridge controls the volume of each feature rather than muting features completely.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Elastic Net
     """)
     return
 
@@ -1446,7 +1446,7 @@ def _(
     y_test,
     y_train,
 ):
-    elastic_model = ElasticNet(alpha=0.1, l1_ratio=0.5, max_iter=10000)
+    elastic_model = ElasticNet(alpha=0.01, l1_ratio=0.3, max_iter=10000)
 
     r2_elastic, rmse_elastic, elastic_model = evaluate_model(
         elastic_model,
@@ -1524,6 +1524,169 @@ def _(comparison, plt):
     plt.ylabel("RMSE (€)")
     plt.title("Model comparison by RMSE")
     plt.show()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    <b> Lesson Learned: </b>
+    Ridge and Lasso are tools for when you have overfitting. With 2 features and 120 well-behaved data points, there's nothing to fix — so the best alpha is essentially 0, and cranking it up only hurts!
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## <center> Hyper-parameter tuning </center>
+
+    The part we saw above with the for loops is useful but when the models are large and we have to combine multiple hyper-parameters, that is not very efficient. Thus, the best way to go by it is to use one of the two known algorithms to find the best hyper-parameters:
+    - GridSearch
+    - Optuna
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### But first... cross-validation
+
+    Let's say we do a train-test split [80:20] and train a Lasso
+    Regression model with α=0.01, getting R²=0.91. Great, right?
+
+    Someone else does the same but uses a different random seed —
+    a different 80:20 split — and gets R²=0.85. What happened?
+
+    Training on different samples from the same dataset can and will
+    produce different results. How do we know which result reflects
+    the model's TRUE performance, rather than luck in how the data
+    happened to be split?
+
+    To get a more reliable estimate of how well a model generalises,
+    we use **cross-validation**. What does it do exactly?
+
+    It splits the data into K parts ("folds"), trains K separate
+    models — each time using a different fold as the test set — and
+    averages the EVALUATION METRIC (e.g. R² or MAE) across all K runs.
+    This gives a more stable estimate of how the model performs, and
+    also shows how much that performance varies depending on the
+    sample.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Grid Search
+    """)
+    return
+
+
+@app.cell
+def _():
+    param_grid_lasso = {
+        'alpha': [0.0001, 0.001, 0.01, 0.1, 1, 5, 10, 50, 100, 300, 500, 1000, 1500, 5000, 8000]
+    }
+    return (param_grid_lasso,)
+
+
+@app.cell
+def _(GridSearchCV, Lasso, X_train_scaled, param_grid_lasso, y_train):
+    grid = GridSearchCV(
+        estimator=Lasso(max_iter=10000),
+        param_grid=param_grid_lasso,
+        cv=5, #cross-validation 5 fold
+        scoring='neg_mean_absolute_error'  # sklearn maximizes by convention, 
+                                             # so MAE needs to be negative
+    )
+
+    grid.fit(X_train_scaled, y_train)
+
+    best_grid_lasso = grid.best_estimator_
+    print(best_grid_lasso)
+    return best_grid_lasso, grid
+
+
+@app.cell
+def _(X_test_scaled, best_grid_lasso, grid, r2_score, y_test):
+
+    print("Best alpha:", grid.best_params_)
+    print("Best MAE:", -grid.best_score_)  # flip sign back
+    print(f"Parameters of the best model are the weightsof the features: {best_grid_lasso.coef_} and the intercept {best_grid_lasso.intercept_}")
+
+    y_pred_grid_lasso = best_grid_lasso.predict(X_test_scaled)
+    r2_grid_lasso = r2_score(y_test, y_pred_grid_lasso)
+    print("R²:", r2_grid_lasso)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Optuna
+    """)
+    return
+
+
+@app.cell
+def _(Lasso, X_train_scaled, cross_val_score, optuna, y_train):
+    def objective(trial):
+        alpha = trial.suggest_float('alpha', 0.001, 100000, log=True)
+    
+        model = Lasso(alpha=alpha, max_iter=10000)
+    
+        scores = cross_val_score(
+            model, X_train_scaled, y_train,
+            cv=5,  # cross-validation 5 fold
+            scoring='neg_mean_absolute_error'
+        )
+    
+        return -scores.mean()  # optuna minimizes, so flip sign
+
+    study_lasso = optuna.create_study(direction='minimize')
+    study_lasso.optimize(objective, n_trials=50)
+
+    return (study_lasso,)
+
+
+@app.cell
+def _(study_lasso):
+    print("Best alpha:", study_lasso.best_params['alpha'])
+    print("Best MAE:", study_lasso.best_value)
+
+    return
+
+
+@app.cell
+def _(
+    Lasso,
+    X_test_scaled,
+    X_train_scaled,
+    r2_score,
+    study_lasso,
+    y_test,
+    y_train,
+):
+    # optuna doesn't auto-refit, so we train manually
+    best_optuna_lasso = Lasso(alpha=study_lasso.best_params['alpha'], max_iter=10000)
+    best_optuna_lasso.fit(X_train_scaled, y_train)
+
+    print(f"Parameters of the best model are the weights of the features: {best_optuna_lasso.coef_} and the intercept {best_optuna_lasso.intercept_}")
+
+    y_pred_optuna_lasso = best_optuna_lasso.predict(X_test_scaled)
+    r2_optuna_lasso = r2_score(y_test, y_pred_optuna_lasso)
+    print("R²:", r2_optuna_lasso)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Notice that GridSearchCV with a coarse grid (10, 100, 1000...) and Optuna with a continuous search both converge to roughly the same R² (~0.9334), even though they found different exact alpha values (10 vs 18). This tells us the loss surface is relatively flat around the optimum — for THIS dataset, the exact alpha doesn't matter much as long as it's in the right ballpark (roughly 1-50). For datasets where the loss surface is sharper, Optuna's finer search would matter more.
+    """)
     return
 
 
