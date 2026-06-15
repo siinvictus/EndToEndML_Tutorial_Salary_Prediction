@@ -1,0 +1,88 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.23.9",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1cdc30cb0de03397c8f25fe5ee5ca67f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "a15ef8b519a1e8eafde013c2da29417c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"1-neural-network-manual\"><center> 1. Neural Network Manual</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "a8171dd65d13adf7d546a2af9dce4cc8",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "115aa4cbe70ea386d69b5264dd4b59d6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "afd11e1d1ec16d4159c0e47c0b810c60",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "4afbccbe9b05c90c4970b3e247c70bbd",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "438208cd3bfbf95b5aea9b679ce6e4ad",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "292103ce23fde8f77b82637971cf47dc",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "9c631999ff469b92a28375c8eec2a7fb",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "3dba1a8d606521c0f4b4f9e061bf6c20",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "cc0e00d3a96d2e3efef1bd575a985eb9",
+      "outputs": [],
+      "console": []
+    }
+  ]
+}
