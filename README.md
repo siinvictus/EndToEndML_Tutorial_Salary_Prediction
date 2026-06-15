@@ -7,6 +7,8 @@ The following notebook is part of a training delivered through the **PyLadies Pr
 <p align="center">
   <img src="extra_images/PyLadies_Prishtina_Logo.jpeg" width="200">
 </p>
+
+
 ---
 
 ## Dataset
