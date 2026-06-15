@@ -4,6 +4,9 @@ The following notebook is part of a training delivered through the **PyLadies Pr
 
 **Expected level of participants:** Beginners with some core high-school level mathematics and basic Python skills.
 
+<p align="center">
+  <img src="extra_images/PyLadies_Prishtina_Logo.png" width="200">
+</p>
 ---
 
 ## Dataset
