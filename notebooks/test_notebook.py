@@ -56,7 +56,7 @@ def _(mo):
     mo.md(r"""
     # <center> The basics of Regression in Python
 
-    The following notebook is part of a training done by Silva Bashllari, MSc through PyLadies Prishtina community on the basics of regression tasks through linear regression (simple and multiple), Ridge & Lasso Regressions.
+    The following notebook is part of a training done by Silva Bashllari & Behare Konjuvca, MSc through PyLadies Prishtina community on the basics of regression tasks through linear regression (simple and multiple), Ridge & Lasso Regressions.
 
     Expected Level of Participants: Beginners with same core skills in high-school level maths and basic Python skills.
 
@@ -1635,20 +1635,19 @@ def _(mo):
 def _(Lasso, X_train_scaled, cross_val_score, optuna, y_train):
     def objective(trial):
         alpha = trial.suggest_float('alpha', 0.001, 100000, log=True)
-    
+
         model = Lasso(alpha=alpha, max_iter=10000)
-    
+
         scores = cross_val_score(
             model, X_train_scaled, y_train,
             cv=5,  # cross-validation 5 fold
             scoring='neg_mean_absolute_error'
         )
-    
+
         return -scores.mean()  # optuna minimizes, so flip sign
 
     study_lasso = optuna.create_study(direction='minimize')
     study_lasso.optimize(objective, n_trials=50)
-
     return (study_lasso,)
 
 
@@ -1656,7 +1655,6 @@ def _(Lasso, X_train_scaled, cross_val_score, optuna, y_train):
 def _(study_lasso):
     print("Best alpha:", study_lasso.best_params['alpha'])
     print("Best MAE:", study_lasso.best_value)
-
     return
 
 
