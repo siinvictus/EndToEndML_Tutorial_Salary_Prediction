@@ -69,7 +69,234 @@ def _(mo):
 
     We will have to make our decisions & experiments on what is the best approach towards that goal, meaning with which variables and models.
 
-    The performance of this will be evaluated based on $R^2$ and $RMSE$ (Root Square Mean Error).
+    The performance of this will be evaluated based on $R^2$ and $RMSE$ (Root Mean Squared Error).
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Learning Map: How This Notebook Is Structured
+
+    Before we start writing code, it is useful to understand the full machine learning workflow we will follow in this notebook.
+
+    A machine learning project is not only about choosing a model and calling `.fit()`.
+    It usually follows a sequence of steps where each step answers a specific question.
+
+    In this notebook, we will move through the following learning path:
+
+    ```text
+    1. Understand the problem
+       ↓
+    2. Understand the dataset
+       ↓
+    3. Clean and prepare the data
+       ↓
+    4. Explore relationships between variables
+       ↓
+    5. Split the data into training and testing sets
+       ↓
+    6. Train simple regression models
+       ↓
+    7. Train a multiple regression model
+       ↓
+    8. Evaluate model performance
+       ↓
+    9. Learn about parameters and hyperparameters
+       ↓
+    10. Add regularization with Ridge, Lasso, and Elastic Net
+       ↓
+    11. Tune hyperparameters using GridSearch and Optuna
+       ↓
+    12. Interpret model predictions
+       ↓
+    13. Save the final model
+    ```
+
+    ### Why do we follow this order?
+
+    Each step prepares us for the next one.
+
+    We first need to understand the data before we can model it.
+    We need to clean the data before we can trust the results.
+    We need to evaluate the model before we can decide whether it is useful.
+    We need to understand parameters and hyperparameters before we can tune models properly.
+
+    The goal of this notebook is not only to get a good prediction score, but to understand the reasoning behind each decision.
+
+    By the end, you should be able to answer:
+
+    * What are the input variables and the target variable?
+    * What does a regression model actually learn?
+    * How do coefficients and intercepts affect predictions?
+    * How do we know whether a model is performing well?
+    * Why do Ridge, Lasso, and Elastic Net exist?
+    * What is the difference between a parameter and a hyperparameter?
+    * Why do we use cross-validation and hyperparameter tuning?
+    * How can we interpret the final model?
+
+    This notebook uses a small toy dataset, but the same structure appears in real machine learning projects.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Key Vocabulary Before We Start
+
+    Before working with the dataset, let’s define the main machine learning terms that will appear throughout this notebook.
+
+    Machine learning can feel confusing at first because many simple ideas are given technical names. This section gives us a shared vocabulary before we start coding.
+
+    | Term                  | In this notebook                             | Meaning                                                           |
+    | --------------------- | -------------------------------------------- | ----------------------------------------------------------------- |
+    | Dataset               | Salary data                                  | The full table of examples we use for learning                    |
+    | Row / Observation     | One person                                   | One example in the dataset                                        |
+    | Feature / Input / (X) | `years_exp`, `exam_score`                    | Information given to the model                                    |
+    | Target / Output / (y) | `salary`                                     | The value we want the model to predict                            |
+    | Model                 | Linear Regression, Ridge, Lasso, Elastic Net | A mathematical function that learns patterns from data            |
+    | Training              | Calling `.fit()`                             | The process where the model learns from data                      |
+    | Prediction            | Calling `.predict()`                         | The model’s estimated output for new input values                 |
+    | Error                 | Real salary - predicted salary               | How far the prediction is from the true value                     |
+    | Evaluation metric     | $R^2$, RMSE (Root Mean Squared Error)        | A number used to judge how well the model performs                |
+    | Parameter             | Coefficient, intercept                       | A value learned by the model during training                      |
+    | Hyperparameter        | `alpha`, `l1_ratio`, `max_iter`              | A value chosen before training that controls how the model learns |
+
+    ### Features and Target
+
+    In supervised machine learning, we usually separate the dataset into:
+
+    $$
+    X = \text{features}
+    $$
+
+    and
+
+    $$
+    y = \text{target}
+    $$
+
+    In this notebook:
+
+    ```text
+    X = years of experience and exam score
+    y = salary
+    ```
+
+    This means we give the model information about a person’s experience and exam score, and we ask it to predict that person’s salary.
+
+    ### Parameters vs Hyperparameters
+
+    A **parameter** is learned by the model.
+
+    For example, in linear regression:
+
+    $$
+    \hat{y} = w_1x_1 + w_2x_2 + b
+    $$
+
+    The model learns:
+
+    * $w_1$: the coefficient for the first feature
+    * $w_2$: the coefficient for the second feature
+    * $b$: the intercept
+
+    A **hyperparameter** is chosen before training.
+
+    For example, in Ridge and Lasso regression, we choose the value of $\alpha$.
+    The model does not learn $\alpha$ by itself; we decide which values to try.
+
+    A simple way to remember the difference:
+
+    > Parameters are learned inside the model.
+    > Hyperparameters control how the model learns.
+
+    ### Common Beginner Confusion
+
+    A model is not “thinking” like a human.
+    It is learning numbers that make its predictions as close as possible to the real values in the training data.
+
+    For linear regression, the model is mainly learning the best coefficients and intercept for the data.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## The Machine Learning Pipeline
+
+    Before we begin with the dataset, let’s understand the overall pipeline we are following.
+
+    A **pipeline** is the sequence of steps that takes us from raw data to a trained model.
+
+    In a real machine learning project, we do not usually jump directly into modeling.
+    We first need to understand the problem, prepare the data, train the model, evaluate it, and only then decide whether the model is useful.
+
+    In this notebook, our pipeline looks like this:
+
+    ```text
+    Raw data
+       ↓
+    Load the dataset
+       ↓
+    Inspect columns, data types, and missing values
+       ↓
+    Clean and prepare the data
+       ↓
+    Explore relationships between variables
+       ↓
+    Choose features and target
+       ↓
+    Split the data into training and testing sets
+       ↓
+    Train regression models
+       ↓
+    Evaluate model performance
+       ↓
+    Improve or regularize the model
+       ↓
+    Tune hyperparameters
+       ↓
+    Interpret predictions
+       ↓
+    Save the final model
+    ```
+    ###Why is this important?
+
+    Each step protects us from a different type of mistake.
+
+    For example:
+
+    If we do not inspect the data, we may miss missing values or wrong data types.
+    If we do not explore the data, we may choose weak or misleading features.
+    If we do not split the data, we may overestimate how good the model is.
+    If we do not evaluate the model, we cannot know whether it learned something useful.
+    If we do not tune hyperparameters carefully, we may choose a model that performs well only by accident.
+
+    So the goal is not just to train a model.
+
+    The goal is to build a model through a process that is understandable, testable, and repeatable.
+
+    ###Educational vs Real-World Pipeline
+
+    This notebook uses a small toy dataset, so the pipeline is simple.
+
+    In a real-world project, the same steps still exist, but they may include extra parts such as:
+
+    - data validation
+    - automated preprocessing
+    - feature engineering
+    - model versioning
+    - experiment tracking
+    - deployment
+    - monitoring model performance over time
+
+    For now, we focus on the core idea:
+
+    > A machine learning model is only one part of a full machine learning workflow.
     """)
     return
 
@@ -84,8 +311,9 @@ def _(mo):
 
 @app.cell
 def _(os):
-    PROJECT_ROOT = os.path.dirname(os.getcwd())  # go up from notebooks/ to project root
-    DATA_PATH = os.path.join(PROJECT_ROOT, "data", "salary_data.xlsx")
+    cwd = os.getcwd()
+    project_root = cwd if os.path.exists(os.path.join(cwd, "data", "salary_data.xlsx")) else os.path.dirname(cwd)
+    DATA_PATH = os.path.join(project_root, "data", "salary_data.xlsx")
     print(f'Your data path is: {DATA_PATH}')
     return (DATA_PATH,)
 
@@ -586,8 +814,8 @@ def _(y_test):
 @app.cell
 def _(model_multi, r2_multi, rmse_multi):
     print(f"Coefficients:")
-    print(f"  exam_score  (w1): {model_multi.coef_[0]:.2f}")
-    print(f"  years_exp   (w2): {model_multi.coef_[1]:.2f}")
+    print(f"  years_exp  (w1): {model_multi.coef_[0]:.2f}")
+    print(f"  exam_score (w2): {model_multi.coef_[1]:.2f}")
     print(f"  intercept   (b):  {model_multi.intercept_:.2f}")
 
     print(f"Evaluation metrics:")
@@ -1020,6 +1248,31 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    ### Quick Reminder: Parameters vs Hyperparameters
+
+    Before introducing Ridge, Lasso, and Elastic Net, remember the difference:
+
+    - **Parameters** are learned by the model during training.
+    - **Hyperparameters** are chosen by us before training.
+
+    In ordinary linear regression, the main learned parameters are:
+
+    - the coefficients
+    - the intercept
+
+    In regularized models, we introduce new hyperparameters such as:
+
+    - `alpha` in Ridge and Lasso
+    - `l1_ratio` in Elastic Net
+
+    These hyperparameters control how strongly the model is regularized.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Until now, our linear regression model had only one main objective: find the coefficients that minimize the prediction error.
 
     In multiple linear regression, our salary prediction followed the form:
@@ -1177,14 +1430,6 @@ def _(mo):
     Instead, the main thing we observe is how Ridge controls the coefficients compared to ordinary linear regression. Ridge keeps both features in the model, but applies pressure on the coefficients so they do not become unnecessarily large.
 
     In our case, since the dataset has only two features and they are not strongly correlated, we do not expect Ridge to dramatically outperform ordinary linear regression. The value of Ridge becomes more visible when the dataset has many features or multicollinearity.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
- 
     """)
     return
 
