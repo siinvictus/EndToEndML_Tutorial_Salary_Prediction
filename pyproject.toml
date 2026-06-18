@@ -20,4 +20,7 @@ dependencies = [
     "seaborn>=0.13.2",
     "shap>=0.52.0",
     "sqlalchemy>=2.0.51",
+    "scikit-learn>=1.9.0",
+    "seaborn>=0.13.2",
+    "shap>=0.52.0",
 ]

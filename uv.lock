@@ -1129,6 +1129,9 @@ dependencies = [
     { name = "seaborn" },
     { name = "shap" },
     { name = "sqlalchemy" },
+    { name = "scikit-learn" },
+    { name = "seaborn" },
+    { name = "shap" },
 ]
 
 [package.metadata]
@@ -1148,6 +1151,9 @@ requires-dist = [
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "shap", specifier = ">=0.52.0" },
     { name = "sqlalchemy", specifier = ">=2.0.51" },
+    { name = "scikit-learn", specifier = ">=1.9.0" },
+    { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "shap", specifier = ">=0.52.0" },
 ]
 
 [[package]]
