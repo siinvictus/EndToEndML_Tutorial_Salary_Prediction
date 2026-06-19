@@ -1330,7 +1330,13 @@ def _(StandardScaler, X, X_test, X_train):
     X_test_scaled = scaler.transform(X_test)
 
     X_scaled = scaler.fit_transform(X)
-    return X_test_scaled, X_train_scaled
+    return X_scaled, X_test_scaled, X_train_scaled
+
+
+@app.cell
+def _(X_scaled):
+    X_scaled[10]
+    return
 
 
 @app.cell

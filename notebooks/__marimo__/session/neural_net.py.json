@@ -8,27 +8,13 @@
     {
       "id": "Hbol",
       "code_hash": "1cdc30cb0de03397c8f25fe5ee5ca67f",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
       "id": "MJUe",
       "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
@@ -47,156 +33,79 @@
     {
       "id": "bkHC",
       "code_hash": "a8171dd65d13adf7d546a2af9dce4cc8",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
       "id": "lEQa",
       "code_hash": "115aa4cbe70ea386d69b5264dd4b59d6",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "RGSE",
-      "code_hash": "9c631999ff469b92a28375c8eec2a7fb",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "QdLA",
-      "code_hash": "4ee44e1e2a6d7a006157a9db40ae58ec",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "OpaV",
-      "code_hash": null,
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "mQsu",
-      "code_hash": null,
       "outputs": [],
       "console": []
     },
     {
       "id": "PKri",
-      "code_hash": "afd11e1d1ec16d4159c0e47c0b810c60",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "code_hash": "9c631999ff469b92a28375c8eec2a7fb",
+      "outputs": [],
       "console": []
     },
     {
       "id": "Xref",
-      "code_hash": "4afbccbe9b05c90c4970b3e247c70bbd",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<pre class='text-xs'>12</pre>"
-          }
-        }
-      ],
+      "code_hash": "4ee44e1e2a6d7a006157a9db40ae58ec",
+      "outputs": [],
       "console": []
     },
     {
       "id": "SFPL",
-      "code_hash": "438208cd3bfbf95b5aea9b679ce6e4ad",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "code_hash": "2835c460b902d3174abfe55384b03e58",
+      "outputs": [],
       "console": []
     },
     {
       "id": "BYtC",
-      "code_hash": "292103ce23fde8f77b82637971cf47dc",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<pre class='text-xs'>14</pre>"
-          }
-        }
-      ],
+      "code_hash": "5e8b2138f413be5b402f5139581e1cb7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "afd11e1d1ec16d4159c0e47c0b810c60",
+      "outputs": [],
       "console": []
     },
     {
       "id": "Kclp",
-      "code_hash": "ff26f03f083e6e0594e91bd1ef40af9c",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "code_hash": "4afbccbe9b05c90c4970b3e247c70bbd",
+      "outputs": [],
       "console": []
     },
     {
       "id": "emfo",
-      "code_hash": "5daacc14d4ec29283b6dcbb77058b317",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "application/json": "[70, 79, 73, 100, 130, 109, 64, 151, 166]"
-          }
-        }
-      ],
+      "code_hash": "438208cd3bfbf95b5aea9b679ce6e4ad",
+      "outputs": [],
       "console": []
     },
     {
-      "id": "qTDK",
+      "id": "Hstk",
+      "code_hash": "292103ce23fde8f77b82637971cf47dc",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "ff26f03f083e6e0594e91bd1ef40af9c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "5daacc14d4ec29283b6dcbb77058b317",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
       "code_hash": "8718095197b08b2b30c1909a22d7b31f",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "application/json": "[68, 74, 70, 94, 124, 104, 63, 145, 160]"
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     }
   ]

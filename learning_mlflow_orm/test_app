@@ -1,0 +1,52 @@
+from test_models import Project, engine
+from sqlalchemy.orm import sessionmaker
+
+'''
+The purpose of this first part is to do CRUD (create, rename, update, delete) operations in the db
+'''
+
+# first you need an active session
+Sesion = sessionmaker(bind=engine)
+session = Sesion()
+
+''' 
+# Adding stuff in the db
+
+project1 = Project(name='workshop_intro', budget= 1000)
+session.add(project1)
+session.commit()
+
+# Adding more:
+project2 = Project(name = 'develpoment_project', budget = 3000)
+project3 = Project(name = 'workshop_advanced', budget = 1700)
+
+session.add(project1) # adding only 1 at a time
+session.add_all([project2, project3])
+session.commit()
+'''
+
+# Querying the db
+
+# query 1
+projects = session.query(Project).all()
+projects_names = []
+for project in projects:
+    projects_names.append(project.name)
+
+print(projects_names)
+
+
+# query 2
+projects_1000 = session.query(Project).filter_by(budget=1000).all()
+print(f'The project with a buget of 1000 eur is {[project.name for project in projects_1000]}')
+
+#query 3: we have workshop_intro twice so let's go ahead and rename one of them.
+workshop1 = session.query(Project).filter_by(id=1).one_or_none()
+print(workshop1.name)
+#workshop1.name = 'Test_workshop'
+#session.commit()
+
+# Deleting elements from the db
+
+#session.delete(workshop1)
+session.commit()

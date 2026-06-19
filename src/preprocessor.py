@@ -31,7 +31,6 @@ class Preprocessor:
         print(f'Nulls droped and the dataset now has {data_no_null.shape[0]} rows.')
         return data_no_null
 
-
     def split_X_y(self, data:pd.DataFrame):
         X = data.drop(['salary'], axis = 1)
         y = data['salary'].copy()
