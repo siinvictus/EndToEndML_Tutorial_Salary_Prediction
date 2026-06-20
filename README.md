@@ -44,6 +44,13 @@ This project demonstrates a **full Data Science / Machine Learning pipeline** â€
 
 ### How to go by it's structure:
 
+Add something here about:
+
+1. Downloading vs code <br>
+2. downloading and using postgres <br>
+3. making sure python is present <br> ?? (is this needed like we have the uv)
+4. installing uv library ??
+
 1. **Marimo Notebook**: first explorations done here.
 2. **The full Python-folder structure**: best-performing models are transformed into propoer project-structure in the **src** folder, reached through running **main.py**.`MLflow` tracking is integrated here to log each run.
 3. **Models saved**: after running main, one should see the models saved as `.pkl` files in the **models** folder.
