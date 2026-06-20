@@ -50,12 +50,19 @@ Add something here about:
 2. downloading and using postgres <br>
 3. making sure python is present <br> ?? (is this needed like we have the uv)
 4. installing uv library ??
+5. the main starts with the sqlalchemy part that creates a db and extracts the data we need
+6. then that data is stored in the data folder (this step needs to be added) and then marimo uses it from there
 
 1. **Marimo Notebook**: first explorations done here.
 2. **The full Python-folder structure**: best-performing models are transformed into propoer project-structure in the **src** folder, reached through running **main.py**.`MLflow` tracking is integrated here to log each run.
 3. **Models saved**: after running main, one should see the models saved as `.pkl` files in the **models** folder.
-4. **Tests**: the **tests** folder contains unit tests for the pipeline, runnable via `pytest`.
-5. 
+4. then to the front end part, it is launched with local host and you get to test the model by inputing values of years of experience and exam score
+5. (some checks need to happen here that they are numbers, that they are within reasonable ranges (should be in tests or ? ))
+6. then you get to see the expected salary because the predict.py class is called through main to make the prediction
+7. then in a function inside the predict.py class we also get an explainer with the SHAP values.
+
+DONT FORGET
+5. **Tests**: the **tests** folder contains unit tests for the pipeline, runnable via `pytest`.
 6. **Reporting**: read the report to understand the full project and pipeline.
 
 ---
