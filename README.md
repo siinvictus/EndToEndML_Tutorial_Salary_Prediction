@@ -68,6 +68,57 @@ DONT FORGET
 
 ---
 
+## Folder Structure
+
+│
+├── notebooks/
+│   └── salary_regression.py        # EXPLORATION ONLY
+│       (marimo: EDA, trying models, plots,
+│        SHAP exploration, scratch work)
+│       → nothing here is "production", 
+│         it's where YOU learn and decide 
+│         what the final pipeline should do
+│
+├── data/
+│   └── salary_data.xlsx             # raw source data
+│
+├── src/
+│   ├── data_loader.py               # loads raw data
+│   ├── preprocessor.py              # cleans, scales, splits
+│   ├── trainer.py                   # trains models, 
+│   │                                  logs to mlflow
+│   ├── predictor.py                 # loads trained model,
+│   │                                  predicts, explains (SHAP)
+│   └── database/                    # NEW — where DB fits
+│       ├── connection.py            # engine, SessionLocal
+│       ├── models.py                # Department, Employee,
+│       │                              EmployeeRecord tables
+│       └── crud.py                  # reusable DB operations
+│
+├── migrations/                      # Alembic schema versions
+│
+├── models/
+│   └── best_model.pkl               # saved trained model
+│
+├── scripts/
+│   ├── seed_database.py             # one-time: populate DB
+│   │                                  with dummy data
+│   └── train_and_log.py             # one-time/repeatable:
+│                                       run training, log to mlflow
+│
+├── api/
+│   └── main.py                      # FastAPI app — the 
+│                                       "front door" tying 
+│                                       everything together
+│
+├── tests/
+│   └── test_preprocessor.py         # pytest
+|
+├── frontend/
+|    └── react? 
+│
+└── main.py                          # simple CLI entrypoint
+
 ## Performance Metrics
 
 | Metric | What it measures |
