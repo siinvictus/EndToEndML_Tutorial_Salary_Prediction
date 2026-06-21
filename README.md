@@ -78,6 +78,10 @@ DONT FORGET
 │         it's where YOU learn and decide 
 │         what the final pipeline should do
 │
+|── learning_mlflow_orm/
+│   └── learn_mlflow.py             # learn mlflow
+│   └── test_models                 # make db schema and connection to db
+│   └── test_app                    # query db
 ├── data/
 │   └── salary_data.xlsx             # raw source data
 │
