@@ -50,21 +50,20 @@ Add something here about:
 2. downloading and using postgres <br>
 3. making sure python is present <br> ?? (is this needed like we have the uv)
 4. installing uv library ??
-5. before starting, get comfortable with a small test of learning orm in python and ml flow using the learning_mlflow_orm folder. Then:
-6. the main starts with the sqlalchemy part that creates a db and extracts the data we need
-7. then that data is stored in the data folder (this step needs to be added) and then marimo uses it from there
-
-1. **Marimo Notebook**: first explorations done here.
+5. Understand the core concepts of data analysis using **Marimo Notebook**, first explorations done here. 
+6. Before starting with production code, get comfortable with a small test of learning orm in python and ml flow using the learning_mlflow_orm folder. Then:
+7. the main starts with the sqlalchemy part that creates a db and extracts the data we need
+8. then that data is stored in the data folder (this step needs to be added)
 2. **The full Python-folder structure**: best-performing models are transformed into propoer project-structure in the **src** folder, reached through running **main.py**.`MLflow` tracking is integrated here to log each run.
 3. **Models saved**: after running main, one should see the models saved as `.pkl` files in the **models** folder.
 4. then to the front end part, it is launched with local host and you get to test the model by inputing values of years of experience and exam score
 5. (some checks need to happen here that they are numbers, that they are within reasonable ranges (should be in tests or ? ))
 6. then you get to see the expected salary because the predict.py class is called through main to make the prediction
-7. then in a function inside the predict.py class we also get an explainer with the SHAP values.
-
+7. then in a function inside the predict.py class we also get an explainer with the SHAP values. **Interpretability** matters, a lot.
+ 
 DONT FORGET
-5. **Tests**: the **tests** folder contains unit tests for the pipeline, runnable via `pytest`.
-6. **Reporting**: read the report to understand the full project and pipeline.
+-**Tests**: the **tests** folder contains unit tests for the pipeline, runnable via `pytest`. <br>
+-**Reporting**: read the report to understand the full project and pipeline.
 
 ---
 
