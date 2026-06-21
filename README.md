@@ -70,8 +70,7 @@ DONT FORGET
 
 ## Folder Structure
 
-│
-├── notebooks/
+├── notebooks/ 
 │   └── salary_regression.py        # EXPLORATION ONLY
 │       (marimo: EDA, trying models, plots,
 │        SHAP exploration, scratch work)
