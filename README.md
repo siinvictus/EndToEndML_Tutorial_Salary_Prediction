@@ -69,7 +69,7 @@ DONT FORGET
 ---
 
 ## Folder Structure
-
+```text
 ├── notebooks/ 
 │   └── salary_regression.py        # EXPLORATION ONLY
 │       (marimo: EDA, trying models, plots,
@@ -117,7 +117,7 @@ DONT FORGET
 |    └── react? 
 │
 └── main.py                          # simple CLI entrypoint
-
+```
 ## Performance Metrics
 
 | Metric | What it measures |
