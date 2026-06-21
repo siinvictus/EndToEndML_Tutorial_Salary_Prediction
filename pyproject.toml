@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
 dependencies = [
+    "joblib>=1.4",
     "marimo>=0.23.9",
     "matplotlib>=3.10.9",
     "mlflow>2.10",
@@ -21,4 +22,5 @@ dependencies = [
     "seaborn>=0.13.2",
     "shap>=0.52.0",
     "sqlalchemy>=2.0.51",
+    "xlrd>=2.0.1",
 ]
