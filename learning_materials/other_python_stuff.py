@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 
-print('Part 1: Dealing with the path library of Python')
+print('Part 1: Dealing with the Path library of Python')
 
 my_path = Path('/home/siinvictus/projects/stupid_project/data/salary_data.xlsx')
 print(f'The path is: {my_path}')
@@ -35,4 +35,38 @@ cord = Coordinates('45° 27\' 59" N', '9° 11\' 25" E' )
 print(f'The coordinates for the center of Milan are {cord}')
 #cord.longitude = 'something else'   #this will produce a dataclasses.FrozenInstanceError: cannot assign to field 'longitude' because you can't change once you've set it.
     
+print('--------------------------------------------------------------------------------------------------------------------------')
+print('Part 3: Error Handling as an important part of the functions we are going to build/use')
 
+my_list = [1,2,3,2,1]
+
+my_list.append(3)
+
+word = 'hi'
+
+#word.append(3)  This will print: AttributeError: 'str' object has no attribute 'append'
+
+try: 
+    word.append(3)
+except AttributeError:
+    print('You can\'t append to a string.')
+
+books = [
+    {'title': 'Invisible Cities', 'author': 'Italo Calvino', 'year': 1972}, 
+    {'title': 'Six Memos for the New Millenium', 'author': 'Italo Calvino', 'year': 1988}
+]
+ 
+
+def print_some_book():
+    try:
+        position = int(input('Enter the nr of the book: '))
+        booki = books[position-1]
+        print(f'Your book is {booki['title']} by {booki['author']}')
+
+    except ValueError:
+        print('You need a number.')
+    except IndexError:
+        print('The book number you put does not exist in our list of books')
+
+
+print_some_book()
