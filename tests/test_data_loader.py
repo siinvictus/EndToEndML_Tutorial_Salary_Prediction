@@ -16,20 +16,20 @@ def sample_csv(tmp_path):
     return csv_path
 
 
-def test_load_data_returns_dataframe(sample_csv):
+def test_load_data_returns_dataframe(sample_csv) -> None:
     loader = DataLoader(sample_csv)
     data = loader.load_data()
     assert isinstance(data, pd.DataFrame)
     assert data.shape == (3, 3)
 
 
-def test_load_data_raises_for_missing_file():
+def test_load_data_raises_for_missing_file()-> None:
     loader = DataLoader("nonexistent_file.csv")
     with pytest.raises(FileNotFoundError):
         loader.load_data()
 
 
-def test_load_data_raises_for_unsupported_extension(tmp_path):
+def test_load_data_raises_for_unsupported_extension(tmp_path) -> None:
     bad_file = tmp_path / "data.txt"
     bad_file.write_text("some content")
     loader = DataLoader(bad_file)
