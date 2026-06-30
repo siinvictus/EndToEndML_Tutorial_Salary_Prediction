@@ -1,0 +1,80 @@
+from test_models import Project, engine
+from sqlalchemy.orm import sessionmaker
+import random 
+'''
+The purpose of this first part is to do some core  operations in the db
+'''
+
+# first you need an active session
+Sesion = sessionmaker(bind=engine)
+session = Sesion()
+
+''' 
+# Adding stuff in the db
+
+project1 = Project(name='workshop_intro', budget= 1000)
+session.add(project1)
+session.commit()
+
+# Adding more:
+project2 = Project(name = 'develpoment_project', budget = 3000)
+project3 = Project(name = 'workshop_advanced', budget = 1700)
+
+session.add(project1) # adding only 1 at a time
+session.add_all([project2, project3])
+session.commit()
+'''
+
+# Querying the db
+
+# query 1
+projects = session.query(Project).all()
+projects_names = []
+for project in projects:
+    projects_names.append(project.name)
+
+print(projects_names)
+
+
+# query 2
+projects_1000 = session.query(Project).filter_by(budget=1000).all()
+print(f'The project with a buget of 1000 eur is {[project.name for project in projects_1000]}')
+
+#query 3: we have workshop_intro twice so let's go ahead and rename one of them.
+workshop1 = session.query(Project).filter_by(id=2).one_or_none()
+print(workshop1.name)
+#workshop1.name = 'Test_workshop'
+#session.commit()
+
+# Deleting elements from the db
+
+#session.delete(workshop1)
+session.commit()
+
+# QUERY 4 
+# ORDERING ITEMS
+
+# FIRST POPULATING WITH SOME FAKE DATA
+project_names = ['women_in_tech', 'python_sql', 'python_frontend', 'python_fastapi', 'workshop_intermediate']
+project_budget = [2000, 2200, 1200, 3100, 990] 
+
+for el in range(10):
+    user = Project(name = random.choice(project_names), budget=random.choice(project_budget))
+    #session.add(user)
+
+# then you order & print
+projects_ranked = session.query(Project).order_by(Project.budget).all()  #for descending (Project.budget.desc())
+print('---------Ranking I------------')
+for project in projects_ranked:
+    print(f'The budget {project.budget} and the name {project.name}')
+
+
+#QUERY 5
+#ORDERING BY 2 CONDITIONS
+
+projects_ranked_two = session.query(Project).order_by(Project.budget, Project.name).all()
+print('----------Ranking II-------------')
+for p in projects_ranked_two:
+    print(f'The budget {p.budget} and the name {p.name}')
+
+session.commit()

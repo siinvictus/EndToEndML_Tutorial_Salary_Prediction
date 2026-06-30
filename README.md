@@ -44,15 +44,83 @@ This project demonstrates a **full Data Science / Machine Learning pipeline** �
 
 ### How to go by it's structure:
 
-1. **Marimo Notebook**: first explorations done here.
+Add something here about:
+
+1. Downloading vs code <br>
+2. downloading and using postgres <br>
+3. making sure python is present <br> ?? (is this needed like we have the uv)
+4. installing uv library ??
+5. Understand the core concepts of data analysis using **Marimo Notebook**, first explorations done here. 
+6. Before starting with production code, get comfortable with a small test of learning orm in python and ml flow using the learning_mlflow_orm folder. Then:
+7. the main starts with the sqlalchemy part that creates a db and extracts the data we need
+8. then that data is stored in the data folder (this step needs to be added)
 2. **The full Python-folder structure**: best-performing models are transformed into propoer project-structure in the **src** folder, reached through running **main.py**.`MLflow` tracking is integrated here to log each run.
 3. **Models saved**: after running main, one should see the models saved as `.pkl` files in the **models** folder.
-4. **Tests**: the **tests** folder contains unit tests for the pipeline, runnable via `pytest`.
-5. 
-6. **Reporting**: read the report to understand the full project and pipeline.
+4. then to the front end part, it is launched with local host and you get to test the model by inputing values of years of experience and exam score
+5. (some checks need to happen here that they are numbers, that they are within reasonable ranges (should be in tests or ? ))
+6. then you get to see the expected salary because the predict.py class is called through main to make the prediction
+7. then in a function inside the predict.py class we also get an explainer with the SHAP values. **Interpretability** matters, a lot.
+ 
+DONT FORGET
+-**Tests**: the **tests** folder contains unit tests for the pipeline, runnable via `pytest`. <br>
+-**Reporting**: read the report to understand the full project and pipeline.
 
 ---
 
+## Folder Structure
+```text
+├── notebooks/ 
+│   └── salary_regression.py        # EXPLORATION ONLY
+│       (marimo: EDA, trying models, plots,
+│        SHAP exploration, scratch work)
+│       → nothing here is "production", 
+│         it's where YOU learn and decide 
+│         what the final pipeline should do
+│
+|── learning_mlflow_orm/
+│   └── learn_mlflow.py             # learn mlflow
+│   └── test_models                 # make db schema and connection to db
+│   └── test_app                    # query db
+├── data/
+│   └── salary_data.xlsx             # raw source data
+│
+├── src/
+│   ├── data_loader.py               # loads raw data
+│   ├── preprocessor.py              # cleans, scales, splits
+│   ├── trainer.py                   # trains models, 
+│   │                                  logs to mlflow
+│   ├── predictor.py                 # loads trained model,
+│   │                                  predicts, explains (SHAP)
+│   └── database/                    # NEW — where DB fits
+│       ├── connection.py            # engine, SessionLocal
+│       ├── models.py                # Department, Employee,
+│       │                              EmployeeRecord tables
+│       └── crud.py                  # reusable DB operations
+│
+├── migrations/                      # Alembic schema versions
+│
+├── models/
+│   └── best_model.pkl               # saved trained model
+│
+├── scripts/
+│   ├── seed_database.py             # one-time: populate DB
+│   │                                  with dummy data
+│   └── train_and_log.py             # one-time/repeatable:
+│                                       run training, log to mlflow
+│
+├── api/
+│   └── main.py                      # FastAPI app — the 
+│                                       "front door" tying 
+│                                       everything together
+│
+├── tests/
+│   └── test_preprocessor.py         # pytest
+|
+├── frontend/
+|    └── react? 
+│
+└── main.py                          # simple CLI entrypoint
+```
 ## Performance Metrics
 
 | Metric | What it measures |

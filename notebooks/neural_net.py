@@ -79,15 +79,15 @@ def _(a2, act_output1, output1, output2, x):
         # backward pass
         delta2 = 2 * errors * relu_derivative(output2)
         delta1 = delta2 * a2 * relu_derivative(output1)
-    
+
         grad_a2 = delta2 * act_output1
         grad_b2 = delta2
-    
+
         grad_a1 = delta1 * x
         grad_b1 = delta1
-    
+
         return grad_a1, grad_b1, grad_a2, grad_b2
-    
+
 
     return
 

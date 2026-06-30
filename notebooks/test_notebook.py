@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.9"
+__generated_with = "0.23.10"
 app = marimo.App(width="medium")
 
 
@@ -868,6 +868,12 @@ def _(mo):
     - 1 more year of experience increases the salary by 2600.94 euros;
     - 1 more point in the exam score increases the salary by 454.22 euros;
     - if the years of experience and the exam score is 0, the expected salary is 12303.14 euros.
+
+    An important note about the errors: <br>
+    At the actual formula above a term is omitted but it's important to briefly discuss it, and that is the error term $$\epsilon_i$$.
+    One of the assumptions of linear regresion is that the errors are i.i.d and following a Normal Distribution, centered at 0. Centered at 0 means the model is not systematically wrong in one direction — it doesn't consistently overestimate or underestimate, errors cancel out on average
+
+    That means that the model makes mistakes in a similiar way across different individuals, simply put.
     """)
     return
 
@@ -889,6 +895,26 @@ def _(plt, y, y_pred_final):
     plt.title('Actual vs Predicted Salary')
     plt.xlabel('Actual Salary')
     plt.ylabel('Predicted Salary')
+    plt.show()
+    return
+
+
+@app.cell
+def _(y, y_pred_final):
+    residuals = y - y_pred_final
+    return (residuals,)
+
+
+@app.cell
+def _(plt, residuals):
+    plt.figure(figsize=(8, 5))
+    plt.hist(residuals, bins=20, color='steelblue', 
+             edgecolor='white', alpha=0.8)
+    plt.axvline(x=0, color='red', linestyle='--', linewidth=1)
+    plt.xlabel('Residual value')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Residuals')
+    plt.tight_layout()
     plt.show()
     return
 
@@ -1330,7 +1356,13 @@ def _(StandardScaler, X, X_test, X_train):
     X_test_scaled = scaler.transform(X_test)
 
     X_scaled = scaler.fit_transform(X)
-    return X_test_scaled, X_train_scaled
+    return X_scaled, X_test_scaled, X_train_scaled
+
+
+@app.cell
+def _(X_scaled):
+    X_scaled[10]
+    return
 
 
 @app.cell
