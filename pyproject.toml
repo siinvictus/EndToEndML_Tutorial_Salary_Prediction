@@ -27,4 +27,5 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "seaborn>=0.13.2",
     "shap>=0.50.0",
+    "uvicorn>=0.49.0",
 ]
