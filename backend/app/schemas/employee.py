@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+# GET SCHEMAS
+
 class DepartmentSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -27,6 +29,8 @@ class EmployeeRecordSchema(BaseModel):
     exam_score: int
     years_exp: int
     salary: float
+
+# POST SCHEMAS - note that we don't have id fields here because they are created automatically
 
 class DepartmentCreate(BaseModel):
     name: str

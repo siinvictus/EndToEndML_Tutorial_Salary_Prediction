@@ -14,6 +14,8 @@ from app.schemas.employee import (
     EmployeeRecordCreate,
 )
 
+# ENDPOINTS IN MAIN.PY BUT USUALLY WHEN THE PROJECT IS BIGGER WE SEPARATE THEM IN ROUTER 
+
 app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
 
