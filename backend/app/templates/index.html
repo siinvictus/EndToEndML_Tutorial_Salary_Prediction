@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ML Project Records</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; background-color: #f7f9fc; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: #34495e; color: white; }
+    </style>
+</head>
+<body>
+
+    <h1>Database Records View</h1>
+    <p>Reading directly from your PostgreSQL employee_records table:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Employee ID</th>
+                <th>Exam Score</th>
+                <th>Years of Experience</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.id }}</td>
+                <td>{{ record.employee_id }}</td>
+                <td>{{ record.exam_score }}</td>
+                <td>{{ record.years_exp }}</td>
+                <td>${{ "%.2f"|format(record.salary) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: #7f8c8d;">
+                    No records found in the database yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
