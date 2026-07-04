@@ -28,14 +28,15 @@ Our goal is to **predict salary** based on the two input variables. We experimen
 ## What This Project Covers
 
 This project demonstrates a **full Data Science / Machine Learning pipeline** — not only preprocessing and model creation, but the complete path from raw data to a live application:
-
-2.  **Exploratory Data Analysis** — distributions, correlations, missing value handling
-3. **Preprocessing** — cleaning, feature selection, train/test split, scaling
-4. **Modelling** — Simple Linear Regression (×2), Multiple Linear Regression, Ridge, Lasso, Elastic Net
-5. **Hyperparamter Tuning** - Using both Optuna and the older GridSearch to show the differences among the two
-6. **Evaluation** — models are compared using $R^2$ and RMSE (Root Mean Squared Error)
-7. **Interpretation** - model predictions are interpreted using the SHAP method.
-8. **Saving the model** — serialising the final trained model as a `.pkl` file
+1. **Exploratory Data Analysis** — distributions, correlations, missing value handling
+2. **Preprocessing** — cleaning, feature selection, train/test split, scaling
+3. **Modelling** — Simple Linear Regression (×2), Multiple Linear Regression, Ridge, Lasso, Elastic Net
+4. **Hyperparamter Tuning** - Using both Optuna and the older GridSearch to show the differences among the two
+5. **Evaluation** — models are compared using $R^2$ and RMSE (Root Mean Squared Error)
+6. **Interpretation** - model predictions are interpreted using the SHAP method.
+7. **Saving the model** — serialising the final trained model as a `.pkl` file
+   
+[Upcoming]
 9. **Deployment** — serving the model via an API
 10. **Web application** — a simple website where users can input values and get a salary prediction
 11. **User testing** — testing the model with real users through the website
