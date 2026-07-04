@@ -174,6 +174,7 @@ python main.py --data data/salaries.csv --model-output models/my_model.pkl
 |
 │
 └── main.py                          # simple CLI entrypoint
+```
 
 ---
 
