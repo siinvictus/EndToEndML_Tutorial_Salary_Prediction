@@ -57,16 +57,53 @@ This project demonstrates a **full Data Science / Machine Learning pipeline** �
 
 ### How to Study/ Go by this project:
 1. Understand the core concepts of data analysis using the **Marimo Notebook**, first explorations are done here. Specificially, go to the folder  `notebooks` and you will see there `experientation_notebook`. In your command line, just by going to the folder write  `marimo edit experientation_notebook` and follow the path on your local pc.
-2. Before starting with production code, get comfortable with a small test of learning orm in python and ml flow using the learning_mlflow_orm folder. Then:
-3. the main starts with the sqlalchemy part that creates a db and extracts the data we need
-4. then that data is stored in the data folder (this step needs to be added)
-5. **The full Python-folder structure**: best-performing models are transformed into propoer project-structure in the **src** folder, reached through running **main.py**.`MLflow` tracking is integrated here to log each run.
-6. **Models saved**: after running main, one should see the models saved as `.pkl` files in the **models** folder.
-7. then to the front end part, it is launched with local host and you get to test the model by inputing values of years of experience and exam score
-8. (some checks need to happen here that they are numbers, that they are within reasonable ranges (should be in tests or ? ))
-9. then you get to see the expected salary because the predict.py class is called through main to make the prediction
-10. then in a function inside the predict.py class we also get an explainer with the SHAP values. **Interpretability** matters, a lot.
- 
+2. Before starting with production code, get comfortable with a small test of learning orm in python and ml flow using the marimo edit `learning_materials` folder.
+3. the main starts with the sqlalchemy part that creates a db and extracts the data we need [This is upcoming]
+4. Then that data is stored in the data folder [You can already find the data there]
+5. **The full Python-folder structure**: best-performing models are transformed into propper project-structure in the **src** folder, reached through running **main.py**.
+## Usage
+
+Run the pipeline from the project root:
+
+```bash
+python main.py --data path/to/data.csv
+```
+
+### Arguments
+
+| Flag | Required | Default | Description |
+|---|---|---|---|
+| `--data` | ✅ | — | Path to a CSV or Excel dataset |
+| `--model` | ❌ | `linear` | Model to train: `linear` or `lasso` |
+| `--alpha` | ❌ | `1.0` | Lasso alpha value (only used with `--model lasso`) |
+| `--scaling` | ❌ | `standard` | Feature scaling: `standard`, `minmax`, or `none` |
+| `--test-size` | ❌ | `0.2` | Proportion of data used for testing |
+| `--random-state` | ❌ | `42` | Random seed for reproducible train/test splits |
+| `--model-output` | ❌ | `models/<model>_regression.pkl` | Custom path to save the trained model |
+| `--explain` | ❌ | off | Print SHAP feature importance for the test set |
+
+### Examples
+
+Train a linear regression model with default settings:
+```bash
+python main.py --data data/salaries.csv
+```
+
+Train a lasso model with a custom alpha and minmax scaling:
+```bash
+python main.py --data data/salaries.csv --model lasso --alpha 0.5 --scaling minmax
+```
+
+Train and print SHAP explanations:
+```bash
+python main.py --data data/salaries.csv --explain
+```
+
+Save the model to a custom path:
+```bash
+python main.py --data data/salaries.csv --model-output models/my_model.pkl
+```
+
 ---
 
 ## Folder Structure
@@ -122,52 +159,9 @@ This project demonstrates a **full Data Science / Machine Learning pipeline** �
 |    └── react? 
 │
 └── main.py                          # simple CLI entrypoint
-```
 
-## Usage
+---
 
-Run the pipeline from the project root:
-
-```bash
-python main.py --data path/to/data.csv
-```
-
-### Arguments
-
-| Flag | Required | Default | Description |
-|---|---|---|---|
-| `--data` | ✅ | — | Path to a CSV or Excel dataset |
-| `--model` | ❌ | `linear` | Model to train: `linear` or `lasso` |
-| `--alpha` | ❌ | `1.0` | Lasso alpha value (only used with `--model lasso`) |
-| `--scaling` | ❌ | `standard` | Feature scaling: `standard`, `minmax`, or `none` |
-| `--test-size` | ❌ | `0.2` | Proportion of data used for testing |
-| `--random-state` | ❌ | `42` | Random seed for reproducible train/test splits |
-| `--model-output` | ❌ | `models/<model>_regression.pkl` | Custom path to save the trained model |
-| `--explain` | ❌ | off | Print SHAP feature importance for the test set |
-
-### Examples
-
-Train a linear regression model with default settings:
-```bash
-python main.py --data data/salaries.csv
-```
-
-Train a lasso model with a custom alpha and minmax scaling:
-```bash
-python main.py --data data/salaries.csv --model lasso --alpha 0.5 --scaling minmax
-```
-
-Train and print SHAP explanations:
-```bash
-python main.py --data data/salaries.csv --explain
-```
-
-Save the model to a custom path:
-```bash
-python main.py --data data/salaries.csv --model-output models/my_model.pkl
-```
-
-```
 ## Performance Metrics
 
 | Metric | What it measures |
