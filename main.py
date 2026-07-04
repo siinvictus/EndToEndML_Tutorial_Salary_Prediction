@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+import pandas as pd
+
 from src.dataloader import DataLoader
 from src.predictor import Predictor
 from src.preprocessor import Preprocessor
@@ -33,7 +35,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--explain",
         action="store_true",
-        help="Print SHAP feature importance for the test set.",
+        help="Print SHAP feature contributions for one prediction.",
+    )
+    parser.add_argument(
+        "--exam-score",
+        type=float,
+        help="Exam score for a new salary prediction.",
+    )
+    parser.add_argument(
+        "--years-exp",
+        type=float,
+        help="Years of experience for a new salary prediction.",
     )
     return parser
 
@@ -44,11 +56,41 @@ def default_model_output(model_name: str) -> Path:
     return Path("models") / filename
 
 
+def has_prediction_input(args: argparse.Namespace) -> bool:
+    """Return whether the CLI includes a complete manual prediction input."""
+    provided_values = [args.exam_score is not None, args.years_exp is not None]
+    if any(provided_values) and not all(provided_values):
+        raise ValueError("--exam-score and --years-exp must be provided together.")
+    return all(provided_values)
+
+
+def build_prediction_features(
+    *,
+    exam_score: float,
+    years_exp: float,
+    preprocessor: Preprocessor,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Build raw and model-ready feature frames for one manual prediction."""
+    raw_features = pd.DataFrame(
+        [{"exam_score": exam_score, "years_exp": years_exp}],
+        columns=preprocessor.feature_columns,
+    )
+    if preprocessor.scaler is None:
+        return raw_features, raw_features
+
+    model_features = pd.DataFrame(
+        preprocessor.scaler.transform(raw_features),
+        columns=preprocessor.feature_columns,
+    )
+    return raw_features, model_features
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
     try:
+        manual_prediction = has_prediction_input(args)
         data = DataLoader(args.data).load_data()
         preprocessor = Preprocessor(
             scaling=args.scaling,
@@ -63,10 +105,26 @@ def main() -> None:
         predictor = Predictor(model)
         predictions = predictor.predict(X_test)
         metrics = predictor.evaluate(y_test, predictions)
-        if args.explain:
+        if manual_prediction:
+            raw_features, model_features = build_prediction_features(
+                exam_score=args.exam_score,
+                years_exp=args.years_exp,
+                preprocessor=preprocessor,
+            )
+            manual_predictions = predictor.predict(model_features)
+            print(f"Predicted salary for supplied input: {manual_predictions[0]:.2f}")
+            if args.explain:
+                explanation = predictor.explain(
+                    model_features,
+                    background_data=X_train,
+                    display_features=raw_features,
+                )
+                print("SHAP feature contributions for supplied input:")
+                print(explanation.feature_contributions.to_string(index=False))
+        elif args.explain:
             explanation = predictor.explain(X_test, background_data=X_train)
-            print("SHAP feature importance:")
-            print(explanation.feature_importance.to_string(index=False))
+            print("SHAP feature contributions for prediction row 0:")
+            print(explanation.feature_contributions.to_string(index=False))
 
         print(f"Model: {args.model}")
         if hasattr(model, "coef_"):

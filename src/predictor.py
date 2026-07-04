@@ -4,14 +4,14 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import Lasso, LinearRegression
 from sklearn.metrics import r2_score, root_mean_squared_error
-
+import shap
 
 @dataclass(frozen=True)
 class ShapExplanationResult:
     """Container for model explanations computed with SHAP."""
 
     values: object
-    feature_importance: pd.DataFrame
+    feature_contributions: pd.DataFrame
 
 
 class Predictor:
@@ -43,15 +43,18 @@ class Predictor:
         features: pd.DataFrame,
         *,
         background_data: pd.DataFrame | None = None,
-        max_background_samples: int = 100,
+        max_background_samples: int = 118,
         plot: str | None = None,
         sample_index: int = 0,
+        display_features: pd.DataFrame | None = None,
     ) -> ShapExplanationResult:
         """Explain model predictions with SHAP values.
 
         The notebook computes SHAP values with ``shap.LinearExplainer`` and an
         independent masker. This method keeps that same approach, but returns
-        reusable data instead of making plotting a required side effect.
+        reusable data instead of making plotting a required side effect. The
+        returned contribution table explains one selected prediction row, not
+        an average across all rows.
         """
         if not isinstance(features, pd.DataFrame):
             raise TypeError("features must be a pandas DataFrame with named columns.")
@@ -59,6 +62,18 @@ class Predictor:
             raise ValueError("features must contain at least one row.")
         if max_background_samples <= 0:
             raise ValueError("max_background_samples must be a positive integer.")
+        if sample_index < 0 or sample_index >= len(features):
+            raise IndexError("sample_index is outside the SHAP explanation range.")
+        if display_features is not None:
+            if not isinstance(display_features, pd.DataFrame):
+                raise TypeError("display_features must be a pandas DataFrame when provided.")
+            if len(display_features) != len(features):
+                raise ValueError("display_features must have the same row count as features.")
+            missing_display_columns = set(features.columns) - set(display_features.columns)
+            if missing_display_columns:
+                columns = ", ".join(sorted(missing_display_columns))
+                raise ValueError(f"display_features is missing feature columns: {columns}.")
+            display_features = display_features.loc[:, features.columns]
 
         if background_data is None:
             background_data = features
@@ -74,25 +89,36 @@ class Predictor:
 
         background_data = background_data.loc[:, features.columns]
 
-        import shap
+     
 
         masker = shap.maskers.Independent(
             background_data, max_samples=max_background_samples
         )
+       
         explainer = shap.LinearExplainer(self.model, masker)
         shap_values = explainer(features)
 
-        importance = pd.DataFrame(
+        selected_values = np.asarray(shap_values.values[sample_index])
+        selected_features = (
+            display_features.iloc[sample_index]
+            if display_features is not None
+            else features.iloc[sample_index]
+        )
+        contributions = pd.DataFrame(
             {
                 "feature": list(features.columns),
-                "mean_absolute_shap_value": np.abs(shap_values.values).mean(axis=0),
+                "feature_value": selected_features.to_numpy(),
+                "shap_value": selected_values,
+                "absolute_shap_value": np.abs(selected_values),
             }
-        ).sort_values("mean_absolute_shap_value", ascending=False, ignore_index=True)
+        ).sort_values("absolute_shap_value", ascending=False, ignore_index=True)
 
         if plot is not None:
             self._plot_shap_explanation(shap_values, plot=plot, sample_index=sample_index)
 
-        return ShapExplanationResult(values=shap_values, feature_importance=importance)
+        return ShapExplanationResult(
+            values=shap_values, feature_contributions=contributions
+        )
 
     def _plot_shap_explanation(
         self, shap_values: object, *, plot: str, sample_index: int

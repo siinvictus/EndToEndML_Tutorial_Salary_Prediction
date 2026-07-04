@@ -93,10 +93,13 @@ class Preprocessor:
         if self.scaling == "none":
             self.scaler = None
             return X_train, X_test
-
-        self.scaler = (
-            StandardScaler() if self.scaling == "standard" else MinMaxScaler()
-        )
+        elif self.scaling == "standard":
+            self.scaler = StandardScaler() 
+            print("You're choosing standard scaler")
+        else:
+            self.scaler =  MinMaxScaler()
+            print("You're choosing minmax scaler")
+        
         X_train_scaled = pd.DataFrame(
             self.scaler.fit_transform(X_train),
             columns=self.feature_columns,
