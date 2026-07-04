@@ -121,6 +121,51 @@ DONT FORGET
 │
 └── main.py                          # simple CLI entrypoint
 ```
+
+## Usage
+
+Run the pipeline from the project root:
+
+```bash
+python main.py --data path/to/data.csv
+```
+
+### Arguments
+
+| Flag | Required | Default | Description |
+|---|---|---|---|
+| `--data` | ✅ | — | Path to a CSV or Excel dataset |
+| `--model` | ❌ | `linear` | Model to train: `linear` or `lasso` |
+| `--alpha` | ❌ | `1.0` | Lasso alpha value (only used with `--model lasso`) |
+| `--scaling` | ❌ | `standard` | Feature scaling: `standard`, `minmax`, or `none` |
+| `--test-size` | ❌ | `0.2` | Proportion of data used for testing |
+| `--random-state` | ❌ | `42` | Random seed for reproducible train/test splits |
+| `--model-output` | ❌ | `models/<model>_regression.pkl` | Custom path to save the trained model |
+| `--explain` | ❌ | off | Print SHAP feature importance for the test set |
+
+### Examples
+
+Train a linear regression model with default settings:
+```bash
+python main.py --data data/salaries.csv
+```
+
+Train a lasso model with a custom alpha and minmax scaling:
+```bash
+python main.py --data data/salaries.csv --model lasso --alpha 0.5 --scaling minmax
+```
+
+Train and print SHAP explanations:
+```bash
+python main.py --data data/salaries.csv --explain
+```
+
+Save the model to a custom path:
+```bash
+python main.py --data data/salaries.csv --model-output models/my_model.pkl
+```
+
+```
 ## Performance Metrics
 
 | Metric | What it measures |
