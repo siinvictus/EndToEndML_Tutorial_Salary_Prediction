@@ -3,7 +3,7 @@ import pytest
 from src.dataloader import DataLoader
 
 
-@pytest.fixture
+@pytest.fixture  #this is a sample that will be used across the different tests that why the 'fixure' part is added.
 def sample_csv(tmp_path):
     """Create a temporary CSV file for testing."""
     csv_path = tmp_path / "test_data.csv"

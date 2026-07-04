@@ -9,3 +9,4 @@ wheels/
 # Virtual environments
 .venv
 notebooks/__marimo__/session/
+.env
