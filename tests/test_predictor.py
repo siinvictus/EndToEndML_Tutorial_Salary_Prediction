@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 from sklearn.linear_model import LinearRegression
 
 from src.predictor import Predictor, ShapExplanationResult
@@ -13,7 +14,12 @@ def test_explain_returns_shap_values_and_local_feature_contributions() -> None:
     )
     target = pd.Series([40_000.0, 55_000.0, 70_000.0, 34_000.0])
     model = LinearRegression().fit(features, target)
+    return model, features, target
 
+
+def test_explain_returns_shap_values_and_feature_importance(fitted_model) -> None:
+    model, features, target = fitted_model
+    
     explanation = Predictor(model).explain(features, background_data=features)
 
     assert isinstance(explanation, ShapExplanationResult)

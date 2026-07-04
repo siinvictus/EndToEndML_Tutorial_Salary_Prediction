@@ -7,7 +7,7 @@ class DataLoader:
 
     SUPPORTED_EXTENSIONS = {".csv", ".xls", ".xlsx"}
 
-    def __init__(self, data_path: str | Path) -> None:
+    def __init__(self, data_path: str | Path) -> None: #meaning the data path can be a string OR a path Object.
         self.data_path = Path(data_path)
 
     def load_data(self) -> pd.DataFrame:

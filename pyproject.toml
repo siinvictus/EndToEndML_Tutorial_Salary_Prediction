@@ -5,6 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
 dependencies = [
+    "alembic>=1.18.4",
+    "fastapi>=0.137.1",
     "llvmlite>=0.44",
     "marimo>=0.23.9",
     "matplotlib>=3.10.9",
@@ -16,11 +18,13 @@ dependencies = [
     "optuna>=4.9.0",
     "pandas<3",
     "plotly>=6.8.0",
-    "protobuf<5",
     "psycopg2-binary>=2.9.12",
+    "pytest>=9.1.1",
     "python-dotenv>=1.2.2",
     "scikit-learn>=1.9.0",
+    "sqlalchemy>=2.0.51",
+    "protobuf<5",
+    "python-dotenv>=1.2.2",
     "seaborn>=0.13.2",
     "shap>=0.50.0",
-    "sqlalchemy>=2.0.51",
 ]
