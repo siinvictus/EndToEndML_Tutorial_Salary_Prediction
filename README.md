@@ -23,6 +23,13 @@ For the purposes of this work, we use the following toy dataset:
 
 Our goal is to **predict salary** based on the two input variables. We experiment with different combinations of features and models to find the best approach.
 
+## Performance Metrics
+
+| Metric | What it measures |
+|---|---|
+| $R^2$ | Proportion of variance in salary explained by the model (0 = useless, 1 = perfect) |
+| RMSE | Average prediction error in euros — lower is better |
+
 ---
 
 ## What This Project Covers
@@ -80,7 +87,12 @@ python main.py --data path/to/data.csv
 | `--test-size` | ❌ | `0.2` | Proportion of data used for testing |
 | `--random-state` | ❌ | `42` | Random seed for reproducible train/test splits |
 | `--model-output` | ❌ | `models/<model>_regression.pkl` | Custom path to save the trained model |
-| `--explain` | ❌ | off | Print SHAP feature importance for the test set |
+| `--exam-score` | ❌ | off | If you want to predict a specific person's salary, you can add their exam score |
+| `--years-exp` | ❌ | off | If you want to predict a specific person's salary, you can add their years of experience |
+| `--explain` | ❌ | off | Print SHAP feature importance for the above person |
+
+*Note: If you want to predict the salary for someone, you must add <b> both </b> the years of experience and salary. 
+       If you want to explain someone's predicted salary you must have had the above two first.
 
 ### Examples
 
@@ -94,9 +106,9 @@ Train a lasso model with a custom alpha and minmax scaling:
 python main.py --data data/salaries.csv --model lasso --alpha 0.5 --scaling minmax
 ```
 
-Train and print SHAP explanations:
+Train, predict and print SHAP explanations for a person whose years of experience are 3 and exam socre is 80:
 ```bash
-python main.py --data data/salaries.csv --explain
+python main.py --data data/salaries.csv --years-exp 3.0 --exam-score 80 --explain
 ```
 
 Save the model to a custom path:
@@ -116,10 +128,11 @@ python main.py --data data/salaries.csv --model-output models/my_model.pkl
 │         it's where YOU learn and decide 
 │         what the final pipeline should do
 │
-|── learning_mlflow_orm/
+|── learning_materials/
 │   └── learn_mlflow.py             # learn mlflow
 │   └── test_models                 # make db schema and connection to db
 │   └── test_app                    # query db
+|   └── other_python_stuff          # learn about general concepts like data classes, error handling etc.  
 ├── data/
 │   └── salary_data.xlsx             # raw source data
 │
@@ -130,46 +143,40 @@ python main.py --data data/salaries.csv --model-output models/my_model.pkl
 │   │                                  logs to mlflow
 │   ├── predictor.py                 # loads trained model,
 │   │                                  predicts, explains (SHAP)
-│   └── database/                    # NEW — where DB fits
+│   └── database/                    # NEW — where DB fits  [Upcoming]
 │       ├── connection.py            # engine, SessionLocal
 │       ├── models.py                # Department, Employee,
 │       │                              EmployeeRecord tables
 │       └── crud.py                  # reusable DB operations
 │
-├── migrations/                      # Alembic schema versions
+├── migrations/                      # Alembic schema versions [Upcoming]
 │
 ├── models/
 │   └── best_model.pkl               # saved trained model
 │
-├── scripts/
+├── scripts/                         # [Upcoming]
 │   ├── seed_database.py             # one-time: populate DB
 │   │                                  with dummy data
 │   └── train_and_log.py             # one-time/repeatable:
 │                                       run training, log to mlflow
 │
-├── api/
+├── api/                             # [Upcoming]
 │   └── main.py                      # FastAPI app — the 
 │                                       "front door" tying 
 │                                       everything together
 │
 ├── tests/
+│   └── test_data_loader.py         # pytest
+│   └── test_predictor.py            # pytest
 │   └── test_preprocessor.py         # pytest
+│   └── test_trainer.py              # pytest
 |
-├── frontend/
-|    └── react? 
+|
 │
 └── main.py                          # simple CLI entrypoint
 
 ---
 
-## Performance Metrics
-
-| Metric | What it measures |
-|---|---|
-| $R^2$ | Proportion of variance in salary explained by the model (0 = useless, 1 = perfect) |
-| RMSE | Average prediction error in euros — lower is better |
-
----
 
 ## Contributors
 
