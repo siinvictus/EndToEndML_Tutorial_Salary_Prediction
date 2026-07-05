@@ -56,9 +56,13 @@ This project demonstrates a **full Data Science / Machine Learning pipeline** â€
 
 ### Base Installations:
 
-1. Downloading VS code <br>
-2. Download Postgres and/or its extension in VS COSE <br>
-3. Make sure python is present through python --version in your environment<br>
+1. Install **Visual Studio Code**. <br>
+2. Install the **VS Code Python extension**. <br>
+3. Install **Git** so you can clone/download the project on the new PC. <br>
+4. Install **Python 3.12** and make sure it is added to PATH. Check it with `python --version`. <br>
+5. Install **uv** for project environment and dependency management. On Windows, you can install it with `winget install --id=astral-sh.uv -e`. <br>
+6. Install **PostgreSQL** if you want to run the database/ORM parts of the project. You can also install **pgAdmin** or the **PostgreSQL VS Code extension** to inspect the database visually. <br>
+7. Open the project in VS Code, then use the terminal to run `uv sync` so uv creates the virtual environment and installs the project dependencies from `pyproject.toml` and `uv.lock`. <br>
 
 ---
 
