@@ -1,10 +1,12 @@
 import argparse
+import contextlib
+import io
 from pathlib import Path
 
 import pandas as pd
 
 from src.dataloader import DataLoader
-from src.predictor import Predictor
+from src.predictor import Predictor, ShapExplanationResult
 from src.preprocessor import Preprocessor
 from src.trainer import Trainer
 
@@ -61,6 +63,11 @@ def has_prediction_input(args: argparse.Namespace) -> bool:
     provided_values = [args.exam_score is not None, args.years_exp is not None]
     if any(provided_values) and not all(provided_values):
         raise ValueError("--exam-score and --years-exp must be provided together.")
+    if args.explain and not all(provided_values):
+        raise ValueError(
+            "--explain requires --exam-score and --years-exp so it can explain "
+            "one specific prediction."
+        )
     return all(provided_values)
 
 
@@ -85,6 +92,63 @@ def build_prediction_features(
     return raw_features, model_features
 
 
+def print_section(title: str) -> None:
+    """Print a readable CLI section header."""
+    line = "=" * 72
+    print()
+    print(line)
+    print(title)
+    print(line)
+
+
+def print_model_report(
+    *,
+    model_name: str,
+    scaling: str,
+    model: object,
+    feature_columns: list[str],
+    train_rows: int,
+    test_rows: int,
+    metrics: dict[str, float],
+    saved_path: Path,
+    manual_prediction: float | None = None,
+    exam_score: float | None = None,
+    years_exp: float | None = None,
+) -> None:
+    """Print the important model results before any optional explanation."""
+    print_section("Model Summary")
+    print(f"Model type      : {model_name}")
+    print(f"Scaling         : {scaling}")
+    print(f"Training rows   : {train_rows}")
+    print(f"Test rows       : {test_rows}")
+    print(f"RMSE            : {metrics['rmse']:,.2f}")
+    print(f"R2              : {metrics['r2']:.4f}")
+
+    if hasattr(model, "coef_"):
+        print_section("Learned Parameters")
+        print("Coefficients:")
+        for feature, coefficient in zip(feature_columns, model.coef_):
+            print(f"  {feature:<12} {coefficient:>12,.4f}")
+    if hasattr(model, "intercept_"):
+        print(f"Intercept       : {model.intercept_:,.4f}")
+
+    if manual_prediction is not None:
+        print_section("Manual Prediction")
+        print(f"Exam score      : {exam_score:,.2f}")
+        print(f"Years experience: {years_exp:,.2f}")
+        print(f"Predicted salary: {manual_prediction:,.2f}")
+
+    print_section("Saved Artifact")
+    print(f"Path            : {saved_path}")
+
+
+def print_shap_explanation(explanation: ShapExplanationResult) -> None:
+    """Print SHAP output as the final optional section."""
+    print_section("SHAP Explanation")
+    print("Feature contributions for the supplied prediction:")
+    print(explanation.feature_contributions.to_string(index=False))
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
@@ -104,7 +168,11 @@ def main() -> None:
 
         predictor = Predictor(model)
         predictions = predictor.predict(X_test)
-        metrics = predictor.evaluate(y_test, predictions)
+        with contextlib.redirect_stdout(io.StringIO()):
+            metrics = predictor.evaluate(y_test, predictions)
+        manual_predictions = None
+        explanation = None
+
         if manual_prediction:
             raw_features, model_features = build_prediction_features(
                 exam_score=args.exam_score,
@@ -112,41 +180,43 @@ def main() -> None:
                 preprocessor=preprocessor,
             )
             manual_predictions = predictor.predict(model_features)
-            print(f"Predicted salary for supplied input: {manual_predictions[0]:.2f}")
             if args.explain:
                 explanation = predictor.explain(
                     model_features,
                     background_data=X_train,
                     display_features=raw_features,
                 )
-                print("SHAP feature contributions for supplied input:")
-                print(explanation.feature_contributions.to_string(index=False))
-        elif args.explain:
-            explanation = predictor.explain(X_test, background_data=X_train)
-            print("SHAP feature contributions for prediction row 0:")
-            print(explanation.feature_contributions.to_string(index=False))
-
-        print(f"Model: {args.model}")
-        if hasattr(model, "coef_"):
-            print("Coefficients:")
-            for feature, coefficient in zip(preprocessor.feature_columns, model.coef_):
-                print(f"  {feature}: {coefficient:.4f}")
-        if hasattr(model, "intercept_"):
-            print(f"Intercept: {model.intercept_:.4f}")
 
         output_path = (
             Path(args.model_output)
             if args.model_output
             else default_model_output(args.model)
         )
-        saved_path = trainer.save_artifact(
-            output_path,
-            scaler=preprocessor.scaler,
+        with contextlib.redirect_stdout(io.StringIO()):
+            saved_path = trainer.save_artifact(
+                output_path,
+                scaler=preprocessor.scaler,
+                feature_columns=preprocessor.feature_columns,
+                target_column=preprocessor.target_column,
+            )
+
+        print_model_report(
+            model_name=args.model,
+            scaling=args.scaling,
+            model=model,
             feature_columns=preprocessor.feature_columns,
-            target_column=preprocessor.target_column,
+            train_rows=len(X_train),
+            test_rows=len(X_test),
+            metrics=metrics,
+            saved_path=saved_path,
+            manual_prediction=(
+                float(manual_predictions[0]) if manual_predictions is not None else None
+            ),
+            exam_score=args.exam_score,
+            years_exp=args.years_exp,
         )
-        print(f"Model artifact path: {saved_path}")
-        print(f"Final metrics — RMSE: {metrics['rmse']:.2f}, R²: {metrics['r2']:.4f}")
+        if explanation is not None:
+            print_shap_explanation(explanation)
     except (FileNotFoundError, ValueError) as error:
         parser.error(str(error))
 
