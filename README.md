@@ -95,7 +95,7 @@ python main.py --data path/to/data.csv
 | `--years-exp` | ❌ | off | If you want to predict a specific person's salary, you can add their years of experience |
 | `--explain` | ❌ | off | Print SHAP feature importance for the above person |
 
-*Note: If you want to predict the salary for someone, you must add <b> both </b> the years of experience and salary. 
+*Note: If you want to predict the salary for someone, you must add <b> both </b> the years of experience and exam score. 
        If you want to explain someone's predicted salary you must have had the above two first.
 
 ### Examples
