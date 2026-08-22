@@ -190,6 +190,7 @@ python main.py --data data/salaries.csv --model-output models/my_model.pkl
 | Silva Bashllari| Author and Contributor|
 | Deshira Randobrava | Contributor |
 | Behare Konjuvca | Contributor |
+| Sara Kola | Contributor"|
 
 ---
 
