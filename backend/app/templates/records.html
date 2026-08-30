@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Records</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; background-color: #f7f9fc; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background-color: #34495e; color: white; }
+        section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        a { color: #2c3e50; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header style="margin-bottom: 30px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+        <nav style="display: flex; gap: 24px; align-items: center;">
+            <a href="/" style="font-weight: 700; color: #2c3e50;">Home</a>
+            <a href="/departments" style="color: #2c3e50;">Departments</a>
+            <a href="/employees" style="color: #2c3e50;">Employees</a>
+            <a href="/records" style="color: #2c3e50;">Records</a>
+        </nav>
+    </header>
+    <section>
+        <h1>Records</h1>
+        <form id="record-form">
+            <label>Employee<br>
+                <select name="employee_id" required>
+                    <option value="">Select employee</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
+                    {% endfor %}
+                </select>
+            </label><br><br>
+            <label>Exam Score<br><input type="number" name="exam_score" required></label><br><br>
+            <label>Years of Experience<br><input type="number" name="years_exp" required></label><br><br>
+            <label>Salary<br><input type="number" name="salary" step="0.01" required></label><br><br>
+            <button type="submit">Create record</button>
+            <span id="record-message" style="margin-left: 1rem;color:#2c3e50"></span>
+        </form>
+
+        <h2>Employee records</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Record ID</th>
+                    <th>Employee ID</th>
+                    <th>Exam Score</th>
+                    <th>Years of Experience</th>
+                    <th>Salary</th>
+                </tr>
+            </thead>
+            <tbody id="records-body">
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.id }}</td>
+                    <td>{{ record.employee_id }}</td>
+                    <td>{{ record.exam_score }}</td>
+                    <td>{{ record.years_exp }}</td>
+                    <td>${{ "%.2f"|format(record.salary) }}</td>
+                </tr>
+                {% else %}
+                <tr id="no-records-row">
+                    <td colspan="5" style="text-align: center; color: #7f8c8d;">No records found in the database yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <script>
+        const recordForm = document.getElementById('record-form');
+        const recordsBody = document.getElementById('records-body');
+        recordForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            const message = document.getElementById('record-message');
+            message.textContent = '';
+            const formData = new FormData(recordForm);
+            const payload = {
+                employee_id: Number(formData.get('employee_id')),
+                exam_score: Number(formData.get('exam_score')),
+                years_exp: Number(formData.get('years_exp')),
+                salary: Number(formData.get('salary')),
+            };
+
+            try {
+                const response = await fetch('/records', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(text || 'Request failed');
+                }
+                const record = await response.json();
+                const noRecordsRow = document.getElementById('no-records-row');
+                if (noRecordsRow) {
+                    noRecordsRow.remove();
+                }
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.id}</td>
+                    <td>${record.employee_id}</td>
+                    <td>${record.exam_score}</td>
+                    <td>${record.years_exp}</td>
+                    <td>$${record.salary.toFixed(2)}</td>
+                `;
+                recordsBody.appendChild(row);
+                message.textContent = 'Record created.';
+                recordForm.reset();
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
