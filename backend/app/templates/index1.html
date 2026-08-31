@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Salary Predictor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<!--THIS IS THE MAIN PAGE NOT YET CONNECTED TO BACKEND--> 
+
+
+<body>
+
+    <header class="header">
+        <img class="logo" src="PyLadies_Prishtina_Logo.jpeg" alt="Logo">
+        <h1 id="title">SALARY PREDICTOR by PyLadies Prishtina</h1>
+        <img class="logo" src="PyLadies_Prishtina_Logo.jpeg" alt="Logo">
+    </header>
+
+    <main id="main">
+        <p class="small-paragraph">
+            Welcome to our salary prediction website. Insert your score on our ficticious exam and the years of experience you have. We will predict your salary and give you the result. 
+        </p>
+
+        <form id="record-form">
+            <input id="input1" type="number" placeholder="Exam score" name="exam_score" required>
+            <input id="input2" type="number" placeholder="Years of experience" name="years_exp" required>
+
+            <button class="button"><a href="result_page.html" type="submit">PREDICT YOUR SALARY</a></button>
+            <span id="record-message"></span>
+        </form>
+        <p class="long-paragraph">
+            This website is part of an EndToEnd Machine Leaning project built by PyLadies Prishtina. Our goal is to predict salary based on the two input variables. We experiment with different combinations of features and models to find the best approach. The inputs asked to the user are the score on a ficticious test and the years of experience.
+        </p>
+
+        <p class="long-paragraph">
+            Our project covers the fundamentals of regression tasks through Simple Linear Regression, Multiple Linear Regression, Ridge, Lasso as well as Elastic Net. The dataset is simple and therefore the models are simple but the core idea is to show the full pipeline with the proper coding steps and stages, including but not limited to: the exploration in notebooks, the proper folder structure, keeping track of experiements, testing and deployment. 
+            We have buit our project as a tutorial where all the steps are detailed and can be understood by anyone with core high-school level mathematics and basic Python skills. <a href="https://github.com/siinvictus/EndToEndML_Tutorial_Salary_Prediction" class="github_link">You can find our tutorial here.</a>
+        </p>
+    </main>
+
+    <footer class="footer">
+        <p>© PyLadies Prishtina 2026</p>
+    </footer>
+
+</body>
+</html>
