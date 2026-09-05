@@ -1,10 +1,11 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, Float, ForeignKey, func
 from sqlalchemy.orm import DeclarativeBase
 
 
 class Base(DeclarativeBase):
     pass
 
+# CRUD demonstration with SQLAlchemy ORM and FastAPI.
 
 class Department(Base):
     __tablename__ = "departments"
@@ -44,3 +45,16 @@ class EmployeeRecord(Base):
     exam_score = Column(Integer, nullable=False)
     years_exp = Column(Integer, nullable=False)
     salary = Column(Float, nullable=False)
+
+
+# Prediction table to store predictions made by the ML model
+
+class Prediction(Base):
+    __tablename__ = "predictions"
+
+    id = Column(Integer, primary_key=True)
+
+    exam_score = Column(Integer, nullable=False)
+    years_exp = Column(Integer, nullable=False)
+    predicted_salary = Column(Float, nullable=False)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
