@@ -185,12 +185,16 @@ python main.py --data data/salaries.csv --model-output models/my_model.pkl
 
 ## Contributors
 
-| Name | Role |
-|---|---|
-| Silva Bashllari| Author and Contributor|
-| Deshira Randobrava | Contributor |
-| Behare Konjuvca | Contributor |
-| Sara Kola | Contributor|
+
+[#contributors](#contributors)
+
+**Silva Bashllari** — Author and main contributor, driving the machine learning side of the project. MSc in Data Science and Engineering from Politecnico di Torino, research associate and tech community builder. Founder of PyLadies Prishtina.
+
+**Behare Konjuvca** — Main contributor on the software structure side, shaping the codebase organization and pipeline architecture. Full stack engineer and tutor with a BSc in Computer Science from UBT.
+
+**Deshira Randobrava** — Contributor. Full stack engineer at Matrics.
+
+**Sara Kola** — Contributor. Second-year student in Informatics Engineering at Politecnico di Torino.
 
 ---
 
