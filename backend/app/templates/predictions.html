@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Records</title>
+    <title>Salary Predictor</title>
     <link rel="stylesheet" href="/static/style.css">
-</head>
+</head> 
+
+
 <body>
     <header class="header">
         <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
@@ -17,51 +18,27 @@
             </nav>        
         <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
     </header>
-    <main class="main">
-        <h1 class="pageTitle">RECORDS</h1>
-        <form id="record-form">
-            <label>Employee<br>
-                <select name="employee_id" required>
-                    <option value="">Select employee</option>
-                    {% for employee in employees %}
-                    <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
-                    {% endfor %}
-                </select>
-            </label><br><br>
-            <input type="number" name="exam_score" placeholder="Exam Score" required>
-            <input type="number" name="years_exp" placeholder="Years of Experience" required>
-            <input type="number" name="salary" step="0.01" placeholder="Salary" required>
-            <button type="submit">Create record</button>
-            <span id="record-message" style="margin-left: 1rem;color:#2c3e50"></span>
-        </form>
 
-        <h2>Employee records</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Record ID</th>
-                    <th>Employee ID</th>
-                    <th>Exam Score</th>
-                    <th>Years of Experience</th>
-                    <th>Salary</th>
-                </tr>
-            </thead>
-            <tbody id="records-body">
-                {% for record in records %}
-                <tr>
-                    <td>{{ record.id }}</td>
-                    <td>{{ record.employee_id }}</td>
-                    <td>{{ record.exam_score }}</td>
-                    <td>{{ record.years_exp }}</td>
-                    <td>${{ "%.2f"|format(record.salary) }}</td>
-                </tr>
-                {% else %}
-                <tr id="no-records-row">
-                    <td colspan="5">No records found in the database yet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <main class="main">
+        <p class="small-paragraph">
+            Welcome to our salary prediction website. Insert your score on our ficticious exam and the years of experience you have. We will predict your salary and give you the result. 
+        </p>
+
+        <form id="record-form">
+            <input class="input1" type="number" placeholder="Exam score" name="exam_score" required>
+            <input class="input2" type="number" placeholder="Years of experience" name="years_exp" required>
+
+            <button><a href="/prediction_result" type="submit">PREDICT YOUR SALARY</a></button>
+            <span id="record-message"></span>
+        </form>
+        <p class="long-paragraph">
+            This website is part of an EndToEnd Machine Leaning project built by PyLadies Prishtina. Our goal is to predict salary based on the two input variables. We experiment with different combinations of features and models to find the best approach. The inputs asked to the user are the score on a ficticious test and the years of experience.
+        </p>
+
+        <p class="long-paragraph">
+            Our project covers the fundamentals of regression tasks through Simple Linear Regression, Multiple Linear Regression, Ridge, Lasso as well as Elastic Net. The dataset is simple and therefore the models are simple but the core idea is to show the full pipeline with the proper coding steps and stages, including but not limited to: the exploration in notebooks, the proper folder structure, keeping track of experiements, testing and deployment. 
+            We have buit our project as a tutorial where all the steps are detailed and can be understood by anyone with core high-school level mathematics and basic Python skills. <a href="https://github.com/siinvictus/EndToEndML_Tutorial_Salary_Prediction" class="github_link">You can find our tutorial here.</a>
+        </p>
     </main>
 
     <footer class="footer">

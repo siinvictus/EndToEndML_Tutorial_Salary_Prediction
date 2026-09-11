@@ -3,33 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>ML Project Records</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 50px; background-color: #f7f9fc; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; }
-        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
-        th { background-color: #34495e; color: white; }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 </head>
 <body>
-    <header style="margin-bottom: 30px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
-        <nav style="display: flex; gap: 24px; align-items: center;">
-            <a href="/" style="font-weight: 700; color: #2c3e50;">Home</a>
-            <a href="/departments" style="color: #2c3e50;">Departments</a>
-            <a href="/employees" style="color: #2c3e50;">Employees</a>
-            <a href="/records" style="color: #2c3e50;">Records</a>
-        </nav>
+    <header class="header">
+        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
+            <nav class="navbar">
+                <a href="/" class="navbar_element">HOME</a>
+                <a href="/departments" class="navbar_element">DEPARTMENTS</a>
+                <a href="/employees" class="navbar_element">EMPLOYEES</a>
+                <a href="/records"  class="navbar_element">RECORDS</a>
+                <a href="/predictions"  class="navbar_element">PREDICTIONS</a>
+            </nav>        
+        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
     </header>
 
-    <section style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
-        <h1>ML App Home</h1>
-        <p>Use the pages below to manage your data.</p>
-        <ul style="padding-left: 20px;">
-            <li><a href="/departments">Departments</a></li>
-            <li><a href="/employees">Employees</a></li>
-            <li><a href="/records">Records</a></li>
+    <main class="main">
+        <h1 class="pageTitle">HOME</h1>
+        <p class="small-paragraph">Use the pages below to manage your data.</p>
+        <ul>
+            <li><a href="/departments" class="MLAppHomeMenu">DEPARTMENTS</a></li>
+            <li><a href="/employees" class="MLAppHomeMenu">EMPLOYEES</a></li>
+            <li><a href="/records" class="MLAppHomeMenu">RECORDS</a></li>
         </ul>
-    </section>
+    </main>
+
+    <footer class="footer">
+        <p>© PyLadies Prishtina 2026</p>
+    </footer>
+
 </body>
 </html>

@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from fastapi.staticfiles import StaticFiles
 
 from app.database.connection import SessionLocal
 from app.database.models import Department, Employee, EmployeeRecord
@@ -17,6 +18,7 @@ from app.schemas.employee import (
 # ENDPOINTS IN MAIN.PY BUT USUALLY WHEN THE PROJECT IS BIGGER WE SEPARATE THEM IN ROUTER 
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 def get_db():
@@ -72,6 +74,34 @@ def records_page(request: Request, db: Session = Depends(get_db)):
             "records": db_records,
         },
     )
+
+@app.get("/predictions", response_class=HTMLResponse)
+def records_page(request: Request, db: Session = Depends(get_db)):
+    db_employees = db.query(Employee).all()
+    db_records = db.query(EmployeeRecord).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="predictions.html",
+        context={
+            "employees": db_employees,
+            "records": db_records,
+        },
+    )
+
+
+@app.get("/prediction_result", response_class=HTMLResponse)
+def records_page(request: Request, db: Session = Depends(get_db)):
+    db_employees = db.query(Employee).all()
+    db_records = db.query(EmployeeRecord).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="prediction_result.html",
+        context={
+            "employees": db_employees,
+            "records": db_records,
+        },
+    )
+
 
 
 @app.post("/departments", response_model=DepartmentSchema)

@@ -3,28 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Employees</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 50px; background-color: #f7f9fc; }
-        section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-        a { color: #2c3e50; text-decoration: none; }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <header style="margin-bottom: 30px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
-        <nav style="display: flex; gap: 24px; align-items: center;">
-            <a href="/" style="font-weight: 700; color: #2c3e50;">Home</a>
-            <a href="/departments" style="color: #2c3e50;">Departments</a>
-            <a href="/employees" style="color: #2c3e50;">Employees</a>
-            <a href="/records" style="color: #2c3e50;">Records</a>
-        </nav>
+    <header class="header">
+        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
+            <nav class="navbar">
+                <a href="/" class="navbar_element">HOME</a>
+                <a href="/departments" class="navbar_element">DEPARTMENTS</a>
+                <a href="/employees" class="navbar_element">EMPLOYEES</a>
+                <a href="/records"  class="navbar_element">RECORDS</a>
+                <a href="/predictions"  class="navbar_element">PREDICTIONS</a>
+            </nav>        
+        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
     </header>
-    <section>
-        <h1>Employees</h1>
+    <main class="main">
+        <h1 class="pageTitle">EMPLOYEES</h1>
         <form id="employee-form">
-            <label>First Name<br><input type="text" name="first_name" required></label><br><br>
-            <label>Last Name<br><input type="text" name="last_name" required></label><br><br>
-            <label>Email<br><input type="email" name="email"></label><br><br>
-            <label>Department<br>
+            <input type="text" name="first_name" placeholder="First Name">
+            <input type="text" name="last_name" placeholder="Last Name" required>
+            <input type="email" name="email" placeholder="Email">
+            <label class="long-paragraph">Department<br>
                 <select name="department_id">
                     <option value="">General</option>
                     {% for department in departments %}
@@ -44,7 +43,10 @@
             <li>No employees yet.</li>
             {% endfor %}
         </ul>
-    </section>
+    </main>
+    <footer class="footer">
+        <p>© PyLadies Prishtina 2026</p>
+    </footer>
 
     <script>
         const employeeForm = document.getElementById('employee-form');
