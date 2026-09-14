@@ -80,21 +80,16 @@ def records_page(request: Request, db: Session = Depends(get_db)):
             "records": db_records,
         },
     )
-#
+
 @app.get("/predictions", response_class=HTMLResponse)
-def records_page(request: Request, db: Session = Depends(get_db)):
-    db_employees = db.query(Employee).all()
-    db_records = db.query(EmployeeRecord).all()
+def predictions_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="predictions.html",
-        context={
-            "employees": db_employees,
-            "records": db_records,
-        },
+        context={},
     )
 
-#
+# get by id based on prediction that was just inserted
 @app.get("/prediction_result", response_class=HTMLResponse)
 def records_page(request: Request, db: Session = Depends(get_db)):
     db_employees = db.query(Employee).all()
@@ -107,17 +102,6 @@ def records_page(request: Request, db: Session = Depends(get_db)):
             "records": db_records,
         },
     )
-
-
-
-@app.get("/result_page.html", response_class=HTMLResponse)
-def result_page(request: Request):
-    return templates.TemplateResponse(request=request, name="result_page.html", context={})
-
-
-@app.get("/index1.html", response_class=HTMLResponse)
-def index1_page(request: Request):
-    return templates.TemplateResponse(request=request, name="index1.html", context={})
 
 @app.post("/departments", response_model=DepartmentSchema)
 def create_department(department_in: DepartmentCreate, db: Session = Depends(get_db)):
