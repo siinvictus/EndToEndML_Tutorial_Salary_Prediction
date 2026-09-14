@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import os
 from sqlalchemy.orm import Session
+from fastapi.staticfiles import StaticFiles
 
 from app.database.connection import SessionLocal
 from app.database.models import Department, Employee, EmployeeRecord, Prediction
@@ -23,10 +24,8 @@ from app.schemas.employee import (
 # ENDPOINTS IN MAIN.PY BUT USUALLY WHEN THE PROJECT IS BIGGER WE SEPARATE THEM IN ROUTER 
 
 app = FastAPI()
-templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "templates"))
-
-# Serve template assets (css/images) under /static
-app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "templates")), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="app/templates")
 
 def get_db():
     db = SessionLocal()
@@ -82,16 +81,27 @@ def records_page(request: Request, db: Session = Depends(get_db)):
         },
     )
 
+@app.get("/predictions", response_class=HTMLResponse)
+def predictions_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="predictions.html",
+        context={},
+    )
 
-@app.get("/result_page.html", response_class=HTMLResponse)
-def result_page(request: Request):
-    return templates.TemplateResponse(request=request, name="result_page.html", context={})
-
-
-@app.get("/index1.html", response_class=HTMLResponse)
-def index1_page(request: Request):
-    return templates.TemplateResponse(request=request, name="index1.html", context={})
-
+# get by id based on prediction that was just inserted
+@app.get("/prediction_result", response_class=HTMLResponse)
+def records_page(request: Request, db: Session = Depends(get_db)):
+    db_employees = db.query(Employee).all()
+    db_records = db.query(EmployeeRecord).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="prediction_result.html",
+        context={
+            "employees": db_employees,
+            "records": db_records,
+        },
+    )
 
 @app.post("/departments", response_model=DepartmentSchema)
 def create_department(department_in: DepartmentCreate, db: Session = Depends(get_db)):
