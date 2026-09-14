@@ -34,6 +34,8 @@
             type="number"
             placeholder="Exam score"
             name="exam_score"
+            min="0"
+            max="100"
             required
         >
 
@@ -42,6 +44,7 @@
             type="number"
             placeholder="Years of experience"
             name="years_exp"
+            min="0"
             required
         >
 
@@ -49,6 +52,22 @@
 
         <span id="prediction-message"></span>
     </form>
+
+    <button id="explain-button" type="button" hidden>EXPLAIN</button>
+    <section id="explanation-section" hidden>
+        <p class="small-paragraph">WHY THIS SALARY?</p>
+        <p id="explanation-summary"></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Value</th>
+                    <th>Impact</th>
+                </tr>
+            </thead>
+            <tbody id="explanation-table-body"></tbody>
+        </table>
+    </section>
 
     <p class="long-paragraph">
         This website is part of an EndToEnd Machine Learning project built by
@@ -85,12 +104,37 @@
 
 <script>
     const predictionForm = document.getElementById('prediction-form');
+    const explainButton = document.getElementById('explain-button');
+    const explanationSection = document.getElementById('explanation-section');
+    const explanationSummary = document.getElementById('explanation-summary');
+    const explanationTableBody = document.getElementById('explanation-table-body');
+    let lastPredictionId = null;
+
+    const salaryFormatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'EUR',
+        maximumFractionDigits: 2,
+    });
+
+    const numberFormatter = new Intl.NumberFormat('en-US', {
+        maximumFractionDigits: 2,
+    });
+
+    function formatFeatureName(feature) {
+        return feature
+            .replace('exam_score', 'Exam score')
+            .replace('years_exp', 'Years of experience');
+    }
 
     predictionForm.addEventListener('submit', async event => {
         event.preventDefault();
 
         const message = document.getElementById('prediction-message');
         message.textContent = '';
+        explainButton.hidden = true;
+        explanationSection.hidden = true;
+        explanationSummary.textContent = '';
+        explanationTableBody.replaceChildren();
 
         const formData = new FormData(predictionForm);
 
@@ -114,14 +158,66 @@
             }
 
             const prediction = await response.json();
+            const predictedSalary = salaryFormatter.format(prediction.predicted_salary);
+            lastPredictionId = prediction.id;
 
             message.textContent =
-                `Prediction created successfully. Prediction ID: ${prediction.id}`;
+                `Predicted salary: ${predictedSalary} (saved as prediction #${prediction.id})`;
 
-            predictionForm.reset();s
+            explainButton.hidden = false;
+            predictionForm.reset();
 
         } catch (error) {
             message.textContent = 'Error: ' + error.message;
+        }
+    });
+
+    explainButton.addEventListener('click', async () => {
+        if (lastPredictionId === null) {
+            return;
+        }
+
+        explainButton.disabled = true;
+        explainButton.textContent = 'EXPLAINING...';
+        explanationSection.hidden = true;
+        explanationSummary.textContent = '';
+        explanationTableBody.replaceChildren();
+
+        try {
+            const response = await fetch(`/predictions/${lastPredictionId}/explain`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Request failed');
+            }
+
+            const explanation = await response.json();
+            explanationSummary.textContent =
+                `The model starts from ${salaryFormatter.format(explanation.base_value)} and reaches ${salaryFormatter.format(explanation.predicted_salary)} after adding each feature impact.`;
+
+            for (const contribution of explanation.contributions) {
+                const row = document.createElement('tr');
+                const featureCell = document.createElement('td');
+                const valueCell = document.createElement('td');
+                const impactCell = document.createElement('td');
+
+                featureCell.textContent = formatFeatureName(contribution.feature);
+                valueCell.textContent = numberFormatter.format(contribution.feature_value);
+                impactCell.textContent = salaryFormatter.format(contribution.shap_value);
+
+                row.append(featureCell, valueCell, impactCell);
+                explanationTableBody.append(row);
+            }
+
+            explanationSection.hidden = false;
+        } catch (error) {
+            explanationSummary.textContent = 'Error: ' + error.message;
+            explanationSection.hidden = false;
+        } finally {
+            explainButton.disabled = false;
+            explainButton.textContent = 'EXPLAIN';
         }
     });
 </script>

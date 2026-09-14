@@ -19,7 +19,9 @@ from app.schemas.employee import (
     EmployeeRecordCreate,
     PredictionSchema,
     PredictionCreate,
+    PredictionExplanationSchema,
 )
+from app.services.salary_prediction import explain_salary_prediction, predict_salary
 
 # ENDPOINTS IN MAIN.PY BUT USUALLY WHEN THE PROJECT IS BIGGER WE SEPARATE THEM IN ROUTER 
 
@@ -160,7 +162,16 @@ def create_prediction(
     prediction_in: PredictionCreate,
     db: Session = Depends(get_db)
 ):
-    predicted_salary = 1000.0  # temporary
+    try:
+        predicted_salary = predict_salary(
+            exam_score=prediction_in.exam_score,
+            years_exp=prediction_in.years_exp,
+        )
+    except (FileNotFoundError, ValueError) as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Could not generate salary prediction: {error}",
+        ) from error
 
     prediction = Prediction(
         exam_score=prediction_in.exam_score,
@@ -173,4 +184,27 @@ def create_prediction(
     db.refresh(prediction)
 
     return prediction
-    # call ML model here
+
+
+@app.post("/predictions/{prediction_id}/explain", response_model=PredictionExplanationSchema)
+def explain_prediction(prediction_id: int, db: Session = Depends(get_db)):
+    prediction = db.get(Prediction, prediction_id)
+    if prediction is None:
+        raise HTTPException(status_code=404, detail="Prediction not found")
+
+    try:
+        explanation = explain_salary_prediction(
+            exam_score=prediction.exam_score,
+            years_exp=prediction.years_exp,
+            predicted_salary=prediction.predicted_salary,
+        )
+    except (FileNotFoundError, ValueError) as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Could not explain salary prediction: {error}",
+        ) from error
+
+    return {
+        "prediction_id": prediction.id,
+        **explanation,
+    }
