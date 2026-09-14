@@ -1,10 +1,14 @@
+from operator import call
+
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+import os
 from sqlalchemy.orm import Session
 
 from app.database.connection import SessionLocal
-from app.database.models import Department, Employee, EmployeeRecord
+from app.database.models import Department, Employee, EmployeeRecord, Prediction
 from app.schemas.employee import (
     DepartmentCreate,
     DepartmentSchema,
@@ -12,12 +16,17 @@ from app.schemas.employee import (
     EmployeeSchema,
     EmployeeRecordSchema,
     EmployeeRecordCreate,
+    PredictionSchema,
+    PredictionCreate,
 )
 
 # ENDPOINTS IN MAIN.PY BUT USUALLY WHEN THE PROJECT IS BIGGER WE SEPARATE THEM IN ROUTER 
 
 app = FastAPI()
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "templates"))
+
+# Serve template assets (css/images) under /static
+app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "templates")), name="static")
 
 def get_db():
     db = SessionLocal()
@@ -74,6 +83,16 @@ def records_page(request: Request, db: Session = Depends(get_db)):
     )
 
 
+@app.get("/result_page.html", response_class=HTMLResponse)
+def result_page(request: Request):
+    return templates.TemplateResponse(request=request, name="result_page.html", context={})
+
+
+@app.get("/index1.html", response_class=HTMLResponse)
+def index1_page(request: Request):
+    return templates.TemplateResponse(request=request, name="index1.html", context={})
+
+
 @app.post("/departments", response_model=DepartmentSchema)
 def create_department(department_in: DepartmentCreate, db: Session = Depends(get_db)):
     department = Department(name=department_in.name)
@@ -125,4 +144,23 @@ def create_record(record_in: EmployeeRecordCreate, db: Session = Depends(get_db)
     db.commit()
     db.refresh(db_record)
     return db_record
-    
+
+@app.post("/predictions", response_model=PredictionSchema)
+def create_prediction(
+    prediction_in: PredictionCreate,
+    db: Session = Depends(get_db)
+):
+    predicted_salary = 1000.0  # temporary
+
+    prediction = Prediction(
+        exam_score=prediction_in.exam_score,
+        years_exp=prediction_in.years_exp,
+        predicted_salary=predicted_salary,
+    )
+
+    db.add(prediction)
+    db.commit()
+    db.refresh(prediction)
+
+    return prediction
+    # call ML model here

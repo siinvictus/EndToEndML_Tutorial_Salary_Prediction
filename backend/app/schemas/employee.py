@@ -47,3 +47,15 @@ class EmployeeRecordCreate(BaseModel):
     years_exp: int
     salary: float
 
+class PredictionSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    exam_score: int
+    years_exp: int
+    predicted_salary: float
+
+
+class PredictionCreate(BaseModel):
+    exam_score: int
+    years_exp: int

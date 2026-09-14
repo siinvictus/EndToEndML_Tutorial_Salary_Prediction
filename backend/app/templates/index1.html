@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Salary Predictor</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <!--THIS IS THE MAIN PAGE NOT YET CONNECTED TO BACKEND--> 
@@ -11,9 +11,9 @@
 <body>
 
     <header class="header">
-        <img class="logo" src="PyLadies_Prishtina_Logo.jpeg" alt="Logo">
+        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
         <h1 id="title">SALARY PREDICTOR by PyLadies Prishtina</h1>
-        <img class="logo" src="PyLadies_Prishtina_Logo.jpeg" alt="Logo">
+        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
     </header>
 
     <main id="main">
@@ -25,10 +25,10 @@
             <input id="input1" type="number" placeholder="Exam score" name="exam_score" required>
             <input id="input2" type="number" placeholder="Years of experience" name="years_exp" required>
 
-            <button class="button"><a href="result_page.html" type="submit">PREDICT YOUR SALARY</a></button>
+            <button class="button" type="submit">PREDICT YOUR SALARY</button>
             <span id="record-message"></span>
         </form>
-        <p class="long-paragraph">
+            <p class="long-paragraph">
             This website is part of an EndToEnd Machine Leaning project built by PyLadies Prishtina. Our goal is to predict salary based on the two input variables. We experiment with different combinations of features and models to find the best approach. The inputs asked to the user are the score on a ficticious test and the years of experience.
         </p>
 
@@ -44,45 +44,39 @@
 
     <script>
         const recordForm = document.getElementById('record-form');
-        const recordsBody = document.getElementById('records-body');
+
         recordForm.addEventListener('submit', async event => {
             event.preventDefault();
+
             const message = document.getElementById('record-message');
             message.textContent = '';
+
             const formData = new FormData(recordForm);
+
             const payload = {
-                employee_id: Number(formData.get('employee_id')),
                 exam_score: Number(formData.get('exam_score')),
-                years_exp: Number(formData.get('years_exp')),
-                salary: Number(formData.get('salary')),
+                years_exp: Number(formData.get('years_exp'))
             };
 
             try {
-                const response = await fetch('/records', {
+                const response = await fetch('/predictions', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
                 });
+
                 if (!response.ok) {
                     const text = await response.text();
                     throw new Error(text || 'Request failed');
                 }
-                const record = await response.json();
-                const noRecordsRow = document.getElementById('no-records-row');
-                if (noRecordsRow) {
-                    noRecordsRow.remove();
-                }
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${record.id}</td>
-                    <td>${record.employee_id}</td>
-                    <td>${record.exam_score}</td>
-                    <td>${record.years_exp}</td>
-                    <td>$${record.salary.toFixed(2)}</td>
-                `;
-                recordsBody.appendChild(row);
-                message.textContent = 'Record created.';
-                recordForm.reset();
+
+                const result = await response.json();
+
+                console.log(result);
+                message.textContent = 'Prediction successful!';
+
             } catch (error) {
                 message.textContent = 'Error: ' + error.message;
             }
