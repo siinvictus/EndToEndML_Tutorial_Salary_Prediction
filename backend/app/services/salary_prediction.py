@@ -1,10 +1,18 @@
 from functools import lru_cache
 from pathlib import Path
+import sys
 from typing import Any
 
-import joblib
+import joblib  # Preserve the existing artifact-loader patch point.
 import pandas as pd
-import shap
+
+# Preserve `cd backend; uvicorn app.main:app` in this source-tree project,
+# where the repository's src package is not installed as a distribution.
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from src import inference, predictor
 
 MODEL_PATH = Path(__file__).resolve().parents[3] / "models" / "linear_regression.pkl"
 DATA_PATH = Path(__file__).resolve().parents[3] / "data" / "salary_data.xlsx"
@@ -23,21 +31,7 @@ COLUMN_RENAMES = {
 
 @lru_cache
 def load_model_artifact() -> dict[str, Any]:
-    artifact = joblib.load(MODEL_PATH)
-    if not isinstance(artifact, dict):
-        return {
-            "model": artifact,
-            "scaler": None,
-            "feature_columns": ["exam_score", "years_exp"],
-        }
-
-    required_keys = {"model", "feature_columns"}
-    missing_keys = required_keys - artifact.keys()
-    if missing_keys:
-        missing = ", ".join(sorted(missing_keys))
-        raise ValueError(f"Model artifact is missing required keys: {missing}")
-
-    return artifact
+    return inference.load_model_artifact(MODEL_PATH)
 
 
 def predict_salary(*, exam_score: int, years_exp: int) -> float:
@@ -48,36 +42,27 @@ def predict_salary(*, exam_score: int, years_exp: int) -> float:
         years_exp=years_exp,
     )
 
-    return float(artifact["model"].predict(model_features)[0])
+    return float(predictor.Predictor(artifact["model"]).predict(model_features)[0])
 
 
 def build_raw_features(
     feature_columns: list[str], *, exam_score: int, years_exp: int
 ) -> pd.DataFrame:
-    return pd.DataFrame(
-        [{"exam_score": exam_score, "years_exp": years_exp}],
-        columns=feature_columns,
+    return inference.build_raw_features(
+        feature_columns, exam_score=exam_score, years_exp=years_exp
     )
 
 
 def build_model_features(
     artifact: dict[str, Any], *, exam_score: int, years_exp: int
 ) -> pd.DataFrame:
-    feature_columns = artifact["feature_columns"]
-    raw_features = build_raw_features(
-        feature_columns,
+    _, model_features = inference.prepare_prediction_features(
+        feature_columns=artifact["feature_columns"],
         exam_score=exam_score,
         years_exp=years_exp,
+        scaler=artifact.get("scaler"),
     )
-    scaler = artifact.get("scaler")
-
-    if scaler is not None:
-        return pd.DataFrame(
-            scaler.transform(raw_features),
-            columns=feature_columns,
-        )
-
-    return raw_features
+    return model_features
 
 
 @lru_cache
@@ -86,15 +71,9 @@ def load_background_features() -> pd.DataFrame:
     feature_columns = artifact["feature_columns"]
     data = pd.read_excel(DATA_PATH).rename(columns=COLUMN_RENAMES)
     background_features = data.dropna().loc[:, feature_columns]
-    scaler = artifact.get("scaler")
-
-    if scaler is not None:
-        return pd.DataFrame(
-            scaler.transform(background_features),
-            columns=feature_columns,
-        )
-
-    return background_features
+    return inference.transform_features(
+        background_features, feature_columns=feature_columns, scaler=artifact.get("scaler")
+    )
 
 
 def explain_salary_prediction(
@@ -115,9 +94,12 @@ def explain_salary_prediction(
     )
     background_features = load_background_features()
 
-    masker = shap.maskers.Independent(background_features, max_samples=118)
-    explainer = shap.LinearExplainer(model, masker)
-    shap_values = explainer(model_features)
+    shap_values = predictor.calculate_shap_values(
+        model,
+        model_features,
+        background_data=background_features,
+        max_background_samples=118,
+    )
     values = shap_values.values[0]
     base_value = shap_values.base_values[0]
 
