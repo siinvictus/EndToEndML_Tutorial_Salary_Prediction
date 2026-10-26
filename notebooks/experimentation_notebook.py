@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.9"
+__generated_with = "0.23.10"
 app = marimo.App(width="medium")
 
 
@@ -10,6 +10,8 @@ def _():
     # even if you don't have them, using Marimo and uv it should be super easy to install & automatically add them
     # to the virtual environment created
     import marimo as mo
+    import os
+    from pathlib import Path
     import numpy as np
     import pandas as pd
     import matplotlib.pyplot as plt
@@ -17,15 +19,14 @@ def _():
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import r2_score, mean_squared_error
     from sklearn.preprocessing import StandardScaler
+    from sklearn.model_selection import cross_val_score
+    from sklearn.model_selection import GridSearchCV
     import plotly.express as px
     import pickle
     import shap
     import seaborn as sns
-    from pathlib import Path
-    import os
-    from sklearn.model_selection import GridSearchCV
     import optuna
-    from sklearn.model_selection import cross_val_score
+
 
     return (
         ElasticNet,
@@ -56,7 +57,7 @@ def _(mo):
     mo.md(r"""
     # <center> The basics of Regression in Python
 
-    The following notebook is part of a training done by Silva Bashllari & Behare Konjuvca, MSc through PyLadies Prishtina community on the basics of regression tasks through linear regression (simple and multiple), Ridge & Lasso Regressions.
+    The following notebook is part of a training done by Silva Bashllari & Behare Konjuvca, through PyLadies Prishtina Community on the basics of regression tasks through linear regression (simple and multiple), Ridge & Lasso Regressions, as well as the ElasticNet.
 
     Expected Level of Participants: Beginners with same core skills in high-school level maths and basic Python skills.
 
@@ -65,11 +66,11 @@ def _(mo):
         2. X-var-2: years of experience at work.
         3. Y-var: Salary.
 
-    Our final goal is to <b> predict the salary.</b>
+    Our final goal is to <b> predict the salary.</b> Imagine this as a company that is trying to hire new people and allows them to take an online exam, these potential employees can enter their exam score and their years of experience to get an idea on their potential salary.
 
     We will have to make our decisions & experiments on what is the best approach towards that goal, meaning with which variables and models.
 
-    The performance of this will be evaluated based on $R^2$ and $RMSE$ (Root Mean Squared Error).
+    The performance of this task will be evaluated based on $R^2$ and $RMSE$ (Root Mean Squared Error).
     """)
     return
 
@@ -166,6 +167,7 @@ def _(mo):
 
     ### Features and Target
 
+    Machine Learning has many categories, one of which will be explored here is supervised machine learning. Supervised learning is a machine learning technique that uses labeled datasets to train models to identify the underlying patterns and relationships.
     In supervised machine learning, we usually separate the dataset into:
 
     $$
@@ -203,7 +205,7 @@ def _(mo):
     * $w_2$: the coefficient for the second feature
     * $b$: the intercept
 
-    A **hyperparameter** is chosen before training.
+    A **hyperparameter** is chosen before training.<i>Don't worry if you don't understand this now, we will get back to this concept later.
 
     For example, in Ridge and Lasso regression, we choose the value of $\alpha$.
     The model does not learn $\alpha$ by itself; we decide which values to try.
