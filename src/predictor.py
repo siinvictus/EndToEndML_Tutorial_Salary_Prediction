@@ -6,6 +6,26 @@ from sklearn.linear_model import Lasso, LinearRegression
 from sklearn.metrics import r2_score, root_mean_squared_error
 import shap
 
+
+def calculate_shap_values(
+    model: object,
+    features: pd.DataFrame,
+    *,
+    background_data: pd.DataFrame,
+    max_background_samples: int = 118,
+) -> object:
+    """Compute SHAP values with the caller's existing background and sampling.
+
+    Validation and result formatting stay with each caller so their existing
+    error behavior, contribution ordering, and display types remain unchanged.
+    """
+    masker = shap.maskers.Independent(
+        background_data, max_samples=max_background_samples
+    )
+    explainer = shap.LinearExplainer(model, masker)
+    return explainer(features)
+
+
 @dataclass(frozen=True)
 class ShapExplanationResult:
     """Container for model explanations computed with SHAP."""
@@ -91,12 +111,12 @@ class Predictor:
 
      
 
-        masker = shap.maskers.Independent(
-            background_data, max_samples=max_background_samples
+        shap_values = calculate_shap_values(
+            self.model,
+            features,
+            background_data=background_data,
+            max_background_samples=max_background_samples,
         )
-       
-        explainer = shap.LinearExplainer(self.model, masker)
-        shap_values = explainer(features)
 
         selected_values = np.asarray(shap_values.values[sample_index])
         selected_features = (

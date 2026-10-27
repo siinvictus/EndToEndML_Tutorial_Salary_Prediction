@@ -1,7 +1,14 @@
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "postgresql://postgres:1234@localhost:5433/salary_prediction"
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("Set DATABASE_URL in the project-root .env file or environment.")
 
 engine = create_engine(DATABASE_URL)
 

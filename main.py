@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.dataloader import DataLoader
+from src import inference
 from src.predictor import Predictor, ShapExplanationResult
 from src.preprocessor import Preprocessor
 from src.trainer import Trainer
@@ -78,18 +79,12 @@ def build_prediction_features(
     preprocessor: Preprocessor,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Build raw and model-ready feature frames for one manual prediction."""
-    raw_features = pd.DataFrame(
-        [{"exam_score": exam_score, "years_exp": years_exp}],
-        columns=preprocessor.feature_columns,
+    return inference.prepare_prediction_features(
+        feature_columns=preprocessor.feature_columns,
+        exam_score=exam_score,
+        years_exp=years_exp,
+        scaler=preprocessor.scaler,
     )
-    if preprocessor.scaler is None:
-        return raw_features, raw_features
-
-    model_features = pd.DataFrame(
-        preprocessor.scaler.transform(raw_features),
-        columns=preprocessor.feature_columns,
-    )
-    return raw_features, model_features
 
 
 def print_section(title: str) -> None:
