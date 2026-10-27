@@ -8,7 +8,7 @@ from app.routers import departments, employees, pages, predictions, records
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-# Retain the original registration order, names, and generated operation IDs.
+
 app.include_router(pages.router)
 app.include_router(departments.router)
 app.include_router(employees.router)
