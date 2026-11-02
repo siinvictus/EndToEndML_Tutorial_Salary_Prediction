@@ -1,54 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Employees</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <header class="header">
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-            <nav class="navbar">
-                <a href="/" class="navbar_element">HOME</a>
-                <a href="/departments" class="navbar_element">DEPARTMENTS</a>
-                <a href="/employees" class="navbar_element">EMPLOYEES</a>
-                <a href="/records"  class="navbar_element">RECORDS</a>
-                <a href="/predictions"  class="navbar_element">PREDICTIONS</a>
-            </nav>        
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-    </header>
-    <main class="main">
-        <h1 class="pageTitle">EMPLOYEES</h1>
-        <form id="employee-form">
-            <input type="text" name="first_name" placeholder="First Name">
-            <input type="text" name="last_name" placeholder="Last Name" required>
-            <input type="email" name="email" placeholder="Email">
-            <label class="long-paragraph">Department<br>
-                <select name="department_id">
-                    <option value="">General</option>
-                    {% for department in departments %}
-                    <option value="{{ department.id }}">{{ department.name }}</option>
-                    {% endfor %}
-                </select>
-            </label><br><br>
-            <button type="submit">Create employee</button>
-            <span id="employee-message" style="margin-left: 1rem;color:#2c3e50"></span>
-        </form>
+{% extends "base.html" %}
 
-        <h2>Existing employees</h2>
-        <ul id="employee-list">
+{% block title %}Employees | Salary Prediction Tutorial{% endblock %}
+
+{% block content %}
+<a class="link-primary d-inline-block mb-3 text-decoration-none" href="/manage-data">&larr; Back to Manage Data</a>
+<header class="page-heading">
+    <p class="page-eyebrow">Manage Data</p>
+    <h1 class="page-title">Employees</h1>
+    <p class="page-description">Create employees and assign them to a department.</p>
+</header>
+
+<div class="row g-4 align-items-start">
+    <section class="col-12 col-lg-5" aria-labelledby="create-employee-heading">
+        <div class="bg-white border rounded p-4">
+            <h2 class="section-title" id="create-employee-heading">Add an employee</h2>
+            <form id="employee-form" class="vstack gap-3">
+                <div>
+                    <label class="form-label" for="first-name">First name</label>
+                    <input class="form-control" id="first-name" type="text" name="first_name" required>
+                </div>
+                <div>
+                    <label class="form-label" for="last-name">Last name</label>
+                    <input class="form-control" id="last-name" type="text" name="last_name" required>
+                </div>
+                <div>
+                    <label class="form-label" for="employee-email">Email <span class="text-secondary">(optional)</span></label>
+                    <input class="form-control" id="employee-email" type="email" name="email">
+                </div>
+                <div>
+                    <label class="form-label" for="department-id">Department</label>
+                    <select class="form-select" id="department-id" name="department_id">
+                        <option value="">General</option>
+                        {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary align-self-start">Create employee</button>
+                <p id="employee-message" class="status-message mb-0" role="status" aria-live="polite"></p>
+            </form>
+        </div>
+    </section>
+
+    <section class="col-12 col-lg-7" aria-labelledby="employee-list-heading">
+        <h2 class="section-title" id="employee-list-heading">Existing employees</h2>
+        <ul class="list-group" id="employee-list">
             {% for employee in employees %}
-            <li>{{ employee.id }} — {{ employee.first_name }} {{ employee.last_name }} (dept {{ employee.department_id }})</li>
+            <li class="list-group-item">{{ employee.id }} <span class="text-secondary">/</span> {{ employee.first_name }} {{ employee.last_name }} <span class="text-secondary">· Department {{ employee.department_id }}</span></li>
             {% else %}
-            <li>No employees yet.</li>
+            <li class="list-group-item text-secondary" id="no-employees-row">No employees yet.</li>
             {% endfor %}
         </ul>
-    </main>
-    <footer class="footer">
-        <p>© PyLadies Prishtina 2026</p>
-    </footer>
+    </section>
+</div>
+{% endblock %}
 
-    <script>
+{% block page_scripts %}
+<script>
         const employeeForm = document.getElementById('employee-form');
         const employeeList = document.getElementById('employee-list');
         employeeForm.addEventListener('submit', async event => {
@@ -74,7 +82,9 @@
                     throw new Error(text || 'Request failed');
                 }
                 const employee = await response.json();
+                document.getElementById('no-employees-row')?.remove();
                 const item = document.createElement('li');
+                item.className = 'list-group-item';
                 item.textContent = `${employee.id} — ${employee.first_name} ${employee.last_name} (dept ${employee.department_id})`;
                 employeeList.appendChild(item);
                 message.textContent = 'Employee created.';
@@ -84,5 +94,4 @@
             }
         });
     </script>
-</body>
-</html>
+{% endblock %}

@@ -1,38 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>ML Project Records</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-</head>
-<body>
-    <header class="header">
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-            <nav class="navbar">
-                <a href="/" class="navbar_element">HOME</a>
-                <a href="/departments" class="navbar_element">DEPARTMENTS</a>
-                <a href="/employees" class="navbar_element">EMPLOYEES</a>
-                <a href="/records"  class="navbar_element">RECORDS</a>
-                <a href="/predictions"  class="navbar_element">PREDICTIONS</a>
-            </nav>        
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-    </header>
+{% extends "base.html" %}
 
-    <main class="main">
-        <h1 class="pageTitle">HOME</h1>
-        <p class="small-paragraph">Use the pages below to manage your data.</p>
-        <ul>
-            <li><a href="/departments" class="MLAppHomeMenu">DEPARTMENTS</a></li>
-            <li><a href="/employees" class="MLAppHomeMenu">EMPLOYEES</a></li>
-            <li><a href="/records" class="MLAppHomeMenu">RECORDS</a></li>
-        </ul>
-    </main>
+{% block title %}Home | Salary Prediction Tutorial{% endblock %}
 
-    <footer class="footer">
-        <p>© PyLadies Prishtina 2026</p>
-    </footer>
+{% block content %}
+<section class="page-heading">
+    <p class="page-eyebrow">End-to-end machine learning tutorial</p>
+    <h1 class="page-title">Salary prediction, from data to deployment.</h1>
+    <p class="page-description fs-5">
+        Explore the sample database, then see how a trained model turns exam score
+        and years of experience into a salary prediction.
+    </p>
+</section>
 
-</body>
-</html>
+<section class="row g-4" aria-label="Project workflows">
+    <div class="col-12 col-md-6">
+        <a class="card workflow-card" href="/manage-data">
+            <div class="card-body p-4">
+                <p class="page-eyebrow">Database tutorial</p>
+                <h2 class="card-title h4">Manage sample data</h2>
+                <p class="card-text mb-3">
+                    Explore departments, employees, and employee records, and try
+                    the available create operations.
+                </p>
+                <span class="link-primary fw-semibold">Open data management</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-md-6">
+        <a class="card workflow-card" href="/predictions">
+            <div class="card-body p-4">
+                <p class="page-eyebrow">Machine learning</p>
+                <h2 class="card-title h4">Run a salary prediction</h2>
+                <p class="card-text mb-3">
+                    Submit the model inputs, view the predicted salary, and inspect
+                    the feature contributions.
+                </p>
+                <span class="link-primary fw-semibold">Open salary predictor</span>
+            </div>
+        </a>
+    </div>
+</section>
+
+<section class="content-section mt-5">
+    <h2 class="section-title">Two separate examples</h2>
+    <p class="page-description mb-0">
+        The CRUD examples use departments, employees, and employee records.
+        Predictions are saved independently and are not linked to those employees.
+        Together, the two workflows demonstrate database-backed application code
+        and a machine-learning inference path.
+    </p>
+</section>
+
+<section class="content-section">
+    <h2 class="section-title">About the project</h2>
+    <p class="page-description">
+        This project explores salary regression using exam score and years of
+        experience. It covers data exploration, model training and comparison,
+        experiment tracking, testing, and deployment, with examples including
+        linear regression, Ridge, Lasso, and Elastic Net.
+    </p>
+    <p class="page-description mb-0">
+        The tutorial is designed for readers with basic Python skills and a
+        high-school mathematics background.
+        <a href="https://github.com/siinvictus/EndToEndML_Tutorial_Salary_Prediction" class="link-primary">
+            Explore the tutorial repository.
+        </a>
+    </p>
+</section>
+{% endblock %}

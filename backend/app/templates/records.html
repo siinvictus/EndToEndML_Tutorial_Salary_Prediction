@@ -1,76 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Records</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <header class="header">
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-            <nav class="navbar">
-                <a href="/" class="navbar_element">HOME</a>
-                <a href="/departments" class="navbar_element">DEPARTMENTS</a>
-                <a href="/employees" class="navbar_element">EMPLOYEES</a>
-                <a href="/records"  class="navbar_element">RECORDS</a>
-                <a href="/predictions"  class="navbar_element">PREDICTIONS</a>
-            </nav>        
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-    </header>
-    <main class="main">
-        <h1 class="pageTitle">RECORDS</h1>
-        <form id="record-form">
-            <label>Employee<br>
-                <select name="employee_id" required>
-                    <option value="">Select employee</option>
-                    {% for employee in employees %}
-                    <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
+{% extends "base.html" %}
+
+{% block title %}Employee Records | Salary Prediction Tutorial{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+{% endblock %}
+
+{% block content %}
+<a class="link-primary d-inline-block mb-3 text-decoration-none" href="/manage-data">&larr; Back to Manage Data</a>
+<header class="page-heading">
+    <p class="page-eyebrow">Manage Data</p>
+    <h1 class="page-title">Employee records</h1>
+    <p class="page-description">Add exam, experience, and salary data for an employee.</p>
+</header>
+
+<div class="row g-4 align-items-start">
+    <section class="col-12 col-lg-4" aria-labelledby="create-record-heading">
+        <div class="bg-white border rounded p-4">
+            <h2 class="section-title" id="create-record-heading">Add a record</h2>
+            <form id="record-form" class="vstack gap-3">
+                <div>
+                    <label class="form-label" for="record-employee">Employee</label>
+                    <select class="form-select js-searchable-select" id="record-employee" name="employee_id" required>
+                        <option value="">Select employee</option>
+                        {% for employee in employees %}
+                        <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label" for="exam-score">Exam score</label>
+                    <input class="form-control" id="exam-score" type="number" name="exam_score" min="0" required>
+                </div>
+                <div>
+                    <label class="form-label" for="years-exp">Years of experience</label>
+                    <input class="form-control" id="years-exp" type="number" name="years_exp" min="0" required>
+                </div>
+                <div>
+                    <label class="form-label" for="salary">Salary</label>
+                    <input class="form-control" id="salary" type="number" name="salary" min="0" step="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary align-self-start">Create record</button>
+                <p id="record-message" class="status-message mb-0" role="status" aria-live="polite"></p>
+            </form>
+        </div>
+    </section>
+
+    <section class="col-12 col-lg-8" aria-labelledby="records-heading">
+        <h2 class="section-title" id="records-heading">Existing records</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Record ID</th>
+                        <th scope="col">Employee ID</th>
+                        <th scope="col">Exam score</th>
+                        <th scope="col">Years of experience</th>
+                        <th scope="col">Salary</th>
+                    </tr>
+                </thead>
+                <tbody id="records-body">
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.employee_id }}</td>
+                        <td>{{ record.exam_score }}</td>
+                        <td>{{ record.years_exp }}</td>
+                        <td>${{ "%.2f"|format(record.salary) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr id="no-records-row">
+                        <td class="empty-state" colspan="5">No records yet. Add one using the form.</td>
+                    </tr>
                     {% endfor %}
-                </select>
-            </label><br><br>
-            <input type="number" name="exam_score" placeholder="Exam Score" required>
-            <input type="number" name="years_exp" placeholder="Years of Experience" required>
-            <input type="number" name="salary" step="0.01" placeholder="Salary" required>
-            <button type="submit">Create record</button>
-            <span id="record-message" style="margin-left: 1rem;color:#2c3e50"></span>
-        </form>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}
 
-        <h2>Employee records</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Record ID</th>
-                    <th>Employee ID</th>
-                    <th>Exam Score</th>
-                    <th>Years of Experience</th>
-                    <th>Salary</th>
-                </tr>
-            </thead>
-            <tbody id="records-body">
-                {% for record in records %}
-                <tr>
-                    <td>{{ record.id }}</td>
-                    <td>{{ record.employee_id }}</td>
-                    <td>{{ record.exam_score }}</td>
-                    <td>{{ record.years_exp }}</td>
-                    <td>${{ "%.2f"|format(record.salary) }}</td>
-                </tr>
-                {% else %}
-                <tr id="no-records-row">
-                    <td colspan="5">No records found in the database yet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </main>
-
-    <footer class="footer">
-        <p>© PyLadies Prishtina 2026</p>
-    </footer>
-
-    <script>
+{% block page_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
         const recordForm = document.getElementById('record-form');
         const recordsBody = document.getElementById('records-body');
+        const employeeSelect = document.getElementById('record-employee');
+        const employeePicker = new Choices(employeeSelect, {
+            allowHTML: false,
+            itemSelectText: '',
+            searchEnabled: true,
+            searchPlaceholderValue: 'Type an employee name',
+            shouldSort: false,
+        });
+
         recordForm.addEventListener('submit', async event => {
             event.preventDefault();
             const message = document.getElementById('record-message');
@@ -109,10 +132,10 @@
                 recordsBody.appendChild(row);
                 message.textContent = 'Record created.';
                 recordForm.reset();
+                employeePicker.setChoiceByValue('');
             } catch (error) {
                 message.textContent = 'Error: ' + error.message;
             }
         });
     </script>
-</body>
-</html>
+{% endblock %}

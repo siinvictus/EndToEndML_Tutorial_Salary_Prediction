@@ -1,44 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Departments</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <header class="header">
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-            <nav class="navbar">
-                <a href="/" class="navbar_element">HOME</a>
-                <a href="/departments" class="navbar_element">DEPARTMENTS</a>
-                <a href="/employees" class="navbar_element">EMPLOYEES</a>
-                <a href="/records"  class="navbar_element">RECORDS</a>
-                <a href="/predictions"  class="navbar_element">PREDICTIONS</a>
-            </nav>        
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-    </header>
-    <main class="main">
-        <h1 class="pageTitle">DEPARTMENTS</h1>
-        <form id="department-form">
-            <input type="text" name="name" placeholder="Name" required>
-            <button type="submit" class="button">Create department</button>
-            <span id="department-message" style="margin-left: 1rem;color:#2c3e50"></span>
-        </form>
+{% extends "base.html" %}
 
-        <h2 class="long-paragraph">EXISTING DEPARTMENTS</h2>
-        <ul id="department-list">
+{% block title %}Departments | Salary Prediction Tutorial{% endblock %}
+
+{% block content %}
+<a class="link-primary d-inline-block mb-3 text-decoration-none" href="/manage-data">&larr; Back to Manage Data</a>
+<header class="page-heading">
+    <p class="page-eyebrow">Manage Data</p>
+    <h1 class="page-title">Departments</h1>
+    <p class="page-description">Create departments and review the groups available to employees.</p>
+</header>
+
+<div class="row g-4 align-items-start">
+    <section class="col-12 col-lg-5" aria-labelledby="create-department-heading">
+        <div class="bg-white border rounded p-4">
+            <h2 class="section-title" id="create-department-heading">Add a department</h2>
+            <form id="department-form" class="vstack gap-3">
+                <div>
+                    <label class="form-label" for="department-name">Department name</label>
+                    <input class="form-control" id="department-name" type="text" name="name" required>
+                </div>
+                <button type="submit" class="btn btn-primary align-self-start">Create department</button>
+                <p id="department-message" class="status-message mb-0" role="status" aria-live="polite"></p>
+            </form>
+        </div>
+    </section>
+
+    <section class="col-12 col-lg-7" aria-labelledby="department-list-heading">
+        <h2 class="section-title" id="department-list-heading">Existing departments</h2>
+        <ul class="list-group" id="department-list">
             {% for department in departments %}
-            <li>{{ department.id }} — {{ department.name }}</li>
+            <li class="list-group-item">{{ department.id }} <span class="text-secondary">/</span> {{ department.name }}</li>
             {% else %}
-            <li>No departments yet</li>
+            <li class="list-group-item text-secondary" id="no-departments-row">No departments yet.</li>
             {% endfor %}
         </ul>
-    </main>
-    <footer class="footer">
-        <p>© PyLadies Prishtina 2026</p>
-    </footer>
-    
-    <script>
+    </section>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
         const departmentForm = document.getElementById('department-form');
         const departmentList = document.getElementById('department-list');
         departmentForm.addEventListener('submit', async event => {
@@ -59,7 +60,9 @@
                     throw new Error(text || 'Request failed');
                 }
                 const department = await response.json();
+                document.getElementById('no-departments-row')?.remove();
                 const item = document.createElement('li');
+                item.className = 'list-group-item';
                 item.textContent = `${department.id} — ${department.name}`;
                 departmentList.appendChild(item);
                 message.textContent = 'Department created.';
@@ -69,5 +72,4 @@
             }
         });
     </script>
-</body>
-</html>
+{% endblock %}
