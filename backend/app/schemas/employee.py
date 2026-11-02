@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict
 
 class EmployeeSchema(BaseModel):
@@ -6,12 +8,12 @@ class EmployeeSchema(BaseModel):
     id: int
     first_name: str
     last_name: str
-    email: str | None = None
+    email: Optional[str] = None
     department_id: int
 
 
 class EmployeeCreate(BaseModel):
     first_name: str
     last_name: str
-    email: str | None = None
-    department_id: int | None = None
+    email: Optional[str] = None
+    department_id: Optional[int] = None
