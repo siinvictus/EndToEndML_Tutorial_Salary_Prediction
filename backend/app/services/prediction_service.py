@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.repositories import prediction_repository
-from app.schemas.employee import PredictionCreate
+from app.schemas.prediction import PredictionCreate
 from app.services import salary_prediction
 
 

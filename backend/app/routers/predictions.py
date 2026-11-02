@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
-from app.schemas.employee import PredictionCreate, PredictionExplanationSchema, PredictionSchema
+from app.schemas.prediction import PredictionCreate, PredictionExplanationSchema, PredictionSchema
 from app.services import prediction_service
 
 

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.repositories import department_repository
-from app.schemas.employee import DepartmentCreate
+from app.schemas.department import DepartmentCreate
 
 
 def list_departments(db: Session):
