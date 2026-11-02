@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.repositories import employee_repository, record_repository
-from app.schemas.employee import EmployeeRecordCreate
+from app.schemas.record import EmployeeRecordCreate
 
 
 class EmployeeNotFoundError(LookupError):
