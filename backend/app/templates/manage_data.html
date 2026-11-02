@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Data | Salary Prediction Tutorial{% endblock %}
+
+{% block content %}
+<header class="page-heading">
+    <p class="page-eyebrow">Database tutorial</p>
+    <h1 class="page-title">Manage Data</h1>
+    <p class="page-description">
+        Choose a data group to inspect its table and use the available create form.
+        Employee records belong to employees; salary predictions are handled in a
+        separate workflow.
+    </p>
+</header>
+
+<section class="row g-3" aria-label="Database models">
+    <div class="col-12 col-md-4">
+        <a class="card workflow-card" href="/departments">
+            <div class="card-body p-4">
+                <h2 class="card-title h5">Departments</h2>
+                <p class="card-text mb-0">The groups employees belong to.</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-md-4">
+        <a class="card workflow-card" href="/employees">
+            <div class="card-body p-4">
+                <h2 class="card-title h5">Employees</h2>
+                <p class="card-text mb-0">People associated with a department.</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-md-4">
+        <a class="card workflow-card" href="/records">
+            <div class="card-body p-4">
+                <h2 class="card-title h5">Employee records</h2>
+                <p class="card-text mb-0">Exam scores, experience, and salaries linked to employees.</p>
+            </div>
+        </a>
+    </div>
+</section>
+{% endblock %}

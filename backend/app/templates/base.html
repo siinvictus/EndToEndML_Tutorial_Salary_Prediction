@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Salary Prediction Tutorial{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=3">
+    {% block head %}{% endblock %}
+</head>
+<body class="app-shell">
+    {% include "_header.html" %}
+
+    <main class="container app-main py-4 py-lg-5">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container py-3 d-flex flex-column flex-sm-row justify-content-between gap-2">
+            <span>© 2026 PyLadies Prishtina</span>
+            <span>End-to-end salary prediction tutorial</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    {% block page_scripts %}{% endblock %}
+</body>
+</html>

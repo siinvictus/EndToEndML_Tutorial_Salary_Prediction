@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-lg app-navbar">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-3" href="/">
+            <img class="app-logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="">
+            <span>PyLadies Prishtina</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navigation" aria-controls="main-navigation" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="main-navigation">
+            <div class="navbar-nav ms-auto">
+                <a href="/" class="nav-link {% if request.url.path == "/" %}active{% endif %}" {% if request.url.path == "/" %}aria-current="page"{% endif %}>Home</a>
+                <a href="/manage-data" class="nav-link {% if request.url.path in ["/manage-data", "/departments", "/employees", "/records"] %}active{% endif %}" {% if request.url.path in ["/manage-data", "/departments", "/employees", "/records"] %}aria-current="page"{% endif %}>Manage Data</a>
+                <a href="/predictions" class="nav-link {% if request.url.path in ["/predictions", "/prediction_result"] %}active{% endif %}" {% if request.url.path in ["/predictions", "/prediction_result"] %}aria-current="page"{% endif %}>Salary Prediction</a>
+            </div>
+        </div>
+    </div>
+</nav>

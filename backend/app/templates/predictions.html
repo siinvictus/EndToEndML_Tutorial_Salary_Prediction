@@ -1,107 +1,77 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-<head>
-    <title>Salary Predictor</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
+{% block title %}Salary Prediction | Salary Prediction Tutorial{% endblock %}
 
-<body>
-    <header class="header">
-        <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
+{% block content %}
+<div class="prediction-panel">
+    <header class="page-heading">
+        <p class="page-eyebrow">Machine learning</p>
+        <h1 class="page-title">Salary prediction</h1>
+        <p class="page-description">
+            Enter an exam score and years of experience to get a salary estimate
+            from the trained model.
+        </p>
+    </header>
 
-    <nav class="navbar">
-        <a href="/" class="navbar_element">HOME</a>
-        <a href="/departments" class="navbar_element">DEPARTMENTS</a>
-        <a href="/employees" class="navbar_element">EMPLOYEES</a>
-        <a href="/records" class="navbar_element">RECORDS</a>
-        <a href="/predictions" class="navbar_element">PREDICTIONS</a>
-    </nav>
-
-    <img class="logo" src="/static/PyLadies_Prishtina_Logo.jpeg" alt="Logo">
-</header>
-
-<main class="main">
-    <p class="small-paragraph">
-        Welcome to our salary prediction website. Insert your score on our fictitious
-        exam and the years of experience you have. We will predict your salary and
-        give you the result.
-    </p>
-
-    <form id="prediction-form">
-        <input
-            class="input1"
-            type="number"
-            placeholder="Exam score"
-            name="exam_score"
-            min="0"
-            max="100"
-            required
-        >
-
-        <input
-            class="input2"
-            type="number"
-            placeholder="Years of experience"
-            name="years_exp"
-            min="0"
-            required
-        >
-
-        <button type="submit">PREDICT YOUR SALARY</button>
-
-        <span id="prediction-message"></span>
-    </form>
-
-    <button id="explain-button" type="button" hidden>EXPLAIN</button>
-    <section id="explanation-section" hidden>
-        <p class="small-paragraph">WHY THIS SALARY?</p>
-        <p id="explanation-summary"></p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Feature</th>
-                    <th>Value</th>
-                    <th>Impact</th>
-                </tr>
-            </thead>
-            <tbody id="explanation-table-body"></tbody>
-        </table>
+    <section class="bg-white border rounded p-4 mb-4" aria-label="Prediction inputs">
+        <form id="prediction-form" class="row g-3">
+            <div class="col-12 col-md-6">
+                <label class="form-label" for="prediction-exam-score">Exam score</label>
+                <input
+                    class="form-control"
+                    id="prediction-exam-score"
+                    type="number"
+                    name="exam_score"
+                    min="0"
+                    max="100"
+                    required
+                >
+            </div>
+            <div class="col-12 col-md-6">
+                <label class="form-label" for="prediction-years-exp">Years of experience</label>
+                <input
+                    class="form-control"
+                    id="prediction-years-exp"
+                    type="number"
+                    name="years_exp"
+                    min="0"
+                    required
+                >
+            </div>
+            <div class="col-12 d-flex flex-wrap align-items-center gap-3">
+                <button class="btn btn-primary" type="submit">Predict salary</button>
+                <button id="explain-button" class="btn btn-outline-primary" type="button" hidden>Explain prediction</button>
+                <p id="prediction-message" class="status-message mb-0" role="status" aria-live="polite"></p>
+            </div>
+        </form>
     </section>
 
-    <p class="long-paragraph">
-        This website is part of an EndToEnd Machine Learning project built by
-        PyLadies Prishtina. Our goal is to predict salary based on the two input
-        variables. We experiment with different combinations of features and models
-        to find the best approach. The inputs asked to the user are the score on a
-        fictitious test and the years of experience.
-    </p>
+    <section id="explanation-section" class="content-section" hidden>
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div>
+                <p class="page-eyebrow">Model explanation</p>
+                <h2 class="section-title">Why this salary?</h2>
+                <p id="explanation-summary" class="page-description"></p>
+            </div>
+        </div>
+        <div class="table-responsive mt-3">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Feature</th>
+                        <th scope="col">Value</th>
+                        <th scope="col">Impact</th>
+                    </tr>
+                </thead>
+                <tbody id="explanation-table-body"></tbody>
+            </table>
+        </div>
+    </section>
+</div>
 
-    <p class="long-paragraph">
-        Our project covers the fundamentals of regression tasks through Simple Linear
-        Regression, Multiple Linear Regression, Ridge, Lasso as well as Elastic Net.
-        The dataset is simple and therefore the models are simple but the core idea
-        is to show the full pipeline with the proper coding steps and stages,
-        including but not limited to: the exploration in notebooks, the proper folder
-        structure, keeping track of experiments, testing and deployment.
+{% endblock %}
 
-        We have built our project as a tutorial where all the steps are detailed and
-        can be understood by anyone with core high-school level mathematics and basic
-        Python skills.
-
-        <a
-            href="https://github.com/siinvictus/EndToEndML_Tutorial_Salary_Prediction"
-            class="github_link"
-        >
-            You can find our tutorial here.
-        </a>
-    </p>
-</main>
-
-<footer class="footer">
-    <p>© PyLadies Prishtina 2026</p>
-</footer>
-
+{% block page_scripts %}
 <script>
     const predictionForm = document.getElementById('prediction-form');
     const explainButton = document.getElementById('explain-button');
@@ -221,5 +191,4 @@
         }
     });
 </script>
-</body>
-</html>
+{% endblock %}

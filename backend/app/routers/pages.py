@@ -18,6 +18,15 @@ def home(request: Request):
     )
 
 
+@router.get("/manage-data", response_class=HTMLResponse)
+def manage_data_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="manage_data.html",
+        context={},
+    )
+
+
 @router.get("/departments", response_class=HTMLResponse)
 def department_page(request: Request, db: Session = Depends(get_db)):
     db_departments = department_service.list_departments(db)
